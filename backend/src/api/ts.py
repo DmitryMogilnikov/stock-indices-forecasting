@@ -3,7 +3,7 @@ from db.redis.redis_ts_api import ts_api
 
 router = APIRouter(
     prefix="/ts",
-    tags=["Time Series"],
+    tags=["Timeseries API"],
 )
 
 @router.post('/add_one_point')

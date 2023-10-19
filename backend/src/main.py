@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 import uvicorn
 from api import router
+from core.app_config import app_config
+
 
 app = FastAPI(
     title="Stock indices forecasting service",
@@ -17,7 +19,7 @@ app.include_router(router=router)
 if __name__ == "__main__":
     uvicorn.run(
         "main:app",
-        host="localhost",
-        port=8000,
+        host=app_config.service_host,
+        port=app_config.service_port,
         reload=True,
     )
