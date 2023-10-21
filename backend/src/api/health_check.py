@@ -8,7 +8,7 @@ router = APIRouter(
     tags=["Health check"],
 )
 
-@router.get('/service')
+@router.get(path='/service', name="Service health check")
 async def health_check_service_route(response: Response):
     response.status_code = status.HTTP_200_OK
     return HealthCheckResponse(
@@ -16,7 +16,7 @@ async def health_check_service_route(response: Response):
         status_message="Service is running." 
     )
 
-@router.get('/redis')
+@router.get(path='/redis', name="Redis health check")
 async def health_check_redis_route(response: Response):
     if redis_db.check_connection():
         response.status_code = status.HTTP_200_OK
