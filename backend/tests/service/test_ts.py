@@ -25,16 +25,16 @@ def test_get_days_to_reduce_procent():
 
 def test_calculate_days_to_target_reductions():
     # Case for an empty array of changes
-    assert ts.calculate_days_to_target_reductions([], 0.6) == []
+    assert ts.calculate_days_to_target_reduction([], 0.6) == []
 
     # Case with correct calculation of days
-    assert ts.calculate_days_to_target_reductions([4.59, 4.21, 3.89, 2.47], 0.6) == [2, 2, 1, 0]
+    assert ts.calculate_days_to_target_reduction([4.59, 4.21, 3.89, 2.47], 0.6) == [2, 2, 1, 0]
 
     # Case where the desired target reduction will never be achieved
-    assert ts.calculate_days_to_target_reductions([4.59, 4.21, 3.89, 2.47], 5.0) == [0, 0, 0, 0]
+    assert ts.calculate_days_to_target_reduction([4.59, 4.21, 3.89, 2.47], 5.0) == [0, 0, 0, 0]
 
     # A case where the desired change will be received immediately
-    assert ts.calculate_days_to_target_reductions([4.59, 4.21, 3.89, 2.47], 0.1) == [1, 1, 1, 0]
+    assert ts.calculate_days_to_target_reduction([4.59, 4.21, 3.89, 2.47], 0.1) == [1, 1, 1, 0]
 
     # A case where the desired change will be received on the last day
-    assert ts.calculate_days_to_target_reductions([4.59, 4.21, 3.89, 2.47], 2.1) == [3, 0, 0, 0]
+    assert ts.calculate_days_to_target_reduction([4.59, 4.21, 3.89, 2.47], 2.1) == [3, 0, 0, 0]

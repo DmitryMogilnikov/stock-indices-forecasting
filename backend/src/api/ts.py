@@ -4,7 +4,7 @@ from fastapi import APIRouter
 
 from core.redis_config import RedisTimeseriesPrefix
 from db.redis.redis_ts_api import ts_api
-from service import ts
+from service import ts_service
 from docs.ts import (add_one_point_route_description,
                      add_points_route_description,
                      delete_range_route_description,
@@ -138,4 +138,4 @@ async def get_days_to_target_reduction(
         end = iso_to_timestamp(end)
 
     percentage_changes_test: list[float] = [0.53, 0.50, 0.45, 0.32] # CHANGE AFTER PR #19
-    return ts.calculate_days_to_target_reductions(percentage_changes_test, target_reduction)
+    return ts_service.calculate_days_to_target_reduction(percentage_changes_test, target_reduction)

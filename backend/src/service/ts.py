@@ -18,7 +18,7 @@ def get_days_to_reduce_procent(percentage_changes: list[float], initial_percent:
 
     return days
 
-def calculate_days_to_target_reductions(percentage_changes: list[float], target_reduction: float, tolerance: float = 1e-6) -> list[int]:
+def calculate_days_to_target_reduction(percentage_changes: list[float], target_reduction: float, tolerance: float = 1e-6) -> list[int]:
     days: list[int] = []
 
     for i, percentage_change in enumerate(percentage_changes):
