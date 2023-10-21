@@ -1,7 +1,7 @@
 from pydantic import validate_call
 from redis import Redis
 
-from core.redis_config import redis_ts_prefixes
+from core.redis_config import redis_ts_prefixes, redis_config
 from db.redis.redis_db import RedisDatabase
 from db.redis.redis_name_manager import redis_name_manager
 
@@ -17,7 +17,7 @@ class RedisTimeseriesAPI:
             ts_name (str): name
         """
         key = redis_name_manager.redis_ts_name(name=name, prefix=prefix)
-        return self.db_ts.add(key, timestamp, value)
+        return self.db_ts.add(key, timestamp, value, duplicate_policy=redis_config.redis_duplicate_policy)
 
     @validate_call
     def add_points(self, name: str, prefix: redis_ts_prefixes, points: list[tuple[int, float]]) -> None:
@@ -30,7 +30,7 @@ class RedisTimeseriesAPI:
         key = redis_name_manager.redis_ts_name(name=name, prefix=prefix)
         pipeline = self.db_ts.pipeline()
         for timestamp, value in points:
-            pipeline.add(key, timestamp, value)
+            pipeline.add(key, timestamp, value, duplicate_policy=redis_config.redis_duplicate_policy)
         pipeline.execute()
 
     @validate_call

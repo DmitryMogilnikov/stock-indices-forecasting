@@ -1,15 +1,18 @@
 from typing import Literal
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 
-from core.redis_config import RedisTimeseriesPrefix
+from core.redis_config import RedisTimeseriesPrefix, redis_config
+from service import ts_data as ts_data_service
+from exceptions import MismatchSizeError
 from db.redis.redis_ts_api import ts_api
 from docs.ts import (add_one_point_route_description,
                      add_points_route_description,
                      delete_range_route_description,
                      delete_ts_route_description,
                      get_last_point_route_description,
-                     get_range_route_description)
+                     get_range_route_description,
+                     add_data_from_moex_by_ticker_description)
 from service.converters.time_converter import iso_to_timestamp
 
 router = APIRouter(
@@ -118,3 +121,31 @@ async def delete_ts_route(
     prefix: RedisTimeseriesPrefix = RedisTimeseriesPrefix.cost,
 ) -> None:
     ts_api.delete_ts(name=name, prefix=prefix.value)
+
+@router.post(
+    path="/add_data_from_moex_by_ticker",
+    name="Add data from moex by ticker",
+    description=add_data_from_moex_by_ticker_description,
+)
+async def add_data_from_moex_by_ticker_route(
+    name: str,
+    start: str,
+    end: str,
+) -> None:
+    start, end = ts_data_service.define_time_range_with_minimum_duration(start, end)
+    df = ts_data_service.get_historical_information(name, start, end)
+ 
+    try:
+        costs_with_timestamps = ts_data_service.get_values_with_timestamps(df['TRADEDATE'], df['MARKETPRICE2'])
+        opens_with_timestamps = ts_data_service.get_values_with_timestamps(df['TRADEDATE'], df['OPEN'])
+        closes_with_timestamps = ts_data_service.get_values_with_timestamps(df['TRADEDATE'], df['CLOSE'])
+        maxs_with_timestamps = ts_data_service.get_values_with_timestamps(df['TRADEDATE'], df['HIGH'])
+        mins_with_timestamps = ts_data_service.get_values_with_timestamps(df['TRADEDATE'], df['LOW'])
+    except MismatchSizeError:
+        raise HTTPException(status_code=500, detail="Mismatched Sizes Error")
+    
+    ts_api.add_points(name, redis_config.redis_cost_key, costs_with_timestamps)
+    ts_api.add_points(name, redis_config.redis_open_key, opens_with_timestamps)
+    ts_api.add_points(name, redis_config.redis_close_key, closes_with_timestamps)
+    ts_api.add_points(name, redis_config.redis_max_key, maxs_with_timestamps)
+    ts_api.add_points(name, redis_config.redis_min_key, mins_with_timestamps)

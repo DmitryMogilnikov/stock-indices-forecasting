@@ -88,3 +88,13 @@ delete_ts_route_description = """
 
     Returns: None
 """
+
+add_data_from_moex_by_ticker_description = """
+    Route for adding data from moex by ticker.
+
+    - name: name of timeseries
+    - start: date in iso format (2023-01-01)
+    - end: date in iso format (2023-01-28)
+
+    Returns: None
+"""
