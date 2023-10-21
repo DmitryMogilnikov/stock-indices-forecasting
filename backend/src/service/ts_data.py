@@ -4,15 +4,24 @@ import pandas as pd
 from typing import Union
 
 
-def get_historical_information(ticker: str, start_date: str,
-                               end_date: str, session: requests.Session()) \
-        -> list[dict[str, tuple[str, int, float]]]:
-    """get historical ticker's data by api request from moex.com"""
+def get_ticker_feature(ticker: str, session: requests.Session()) -> tuple[str, str, str]:
+    """
+    :return:
+        (engine, market, board)"""
 
     features: pd.DataFrame = pd.DataFrame(apimoex.find_securities(session, ticker,
                                                                   columns=('secid', 'group', 'primary_boardid')))
     engine, market = features.loc[features['secid'] == ticker].group.values[0].split('_')
     board: str = features.loc[features.secid == ticker].primary_boardid.values[0]
+    return engine, market, board
+
+def get_historical_information(ticker: str, start_date: str,
+                               end_date: str, session: requests.Session()) \
+        -> list[dict[str, tuple[str, int, float]]]:
+    """get historical ticker's data by api request from moex.com
+    :return: a list of dictionaries that can be easily converted to a pandas.DataFrame"""
+
+    engine, market, board = get_ticker_feature(ticker, session)
     return apimoex.get_board_history(session, ticker, start=start_date, end=end_date,
                                      columns=('TRADEDATE', 'OPEN', 'CLOSE', 'HIGH', 'LOW', 'VALUE', 'CAPITALIZATION'),
                                      board=board, market=market, engine=engine)
