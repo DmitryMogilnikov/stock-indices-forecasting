@@ -1,15 +1,16 @@
+from pydantic import validate_call
 from redis import Redis
+
 from core.redis_config import redis_ts_prefixes
 from db.redis.redis_db import RedisDatabase
 from db.redis.redis_name_manager import redis_name_manager
-from pydantic import validate_call
+
 
 class RedisTimeseriesAPI:
     redis_db: RedisDatabase = RedisDatabase()
     db_ts: Redis.ts = redis_db.db.ts()
-    
-    def add_one_point(
-        self, name: str, prefix: redis_ts_prefixes, value: float, timestamp: str | int = "*") -> None:
+
+    def add_one_point(self, name: str, prefix: redis_ts_prefixes, value: float, timestamp: str | int = "*") -> None:
         """Add point to Redis timeseries.
 
         Args:
@@ -50,8 +51,8 @@ class RedisTimeseriesAPI:
         self,
         name: str,
         prefix: redis_ts_prefixes,
-        start: str | int = '-',
-        end: str | int = '+',
+        start: str | int = "-",
+        end: str | int = "+",
         count: int | None = None,
         reverse: bool = False,
     ) -> list[tuple[float, float]]:
@@ -77,8 +78,8 @@ class RedisTimeseriesAPI:
         self,
         name: str,
         prefix: redis_ts_prefixes,
-        start: str | int = '-',
-        end: str | int = '+',
+        start: str | int = "-",
+        end: str | int = "+",
     ) -> None:
         """Delete range points from Redis timeseries.
 
