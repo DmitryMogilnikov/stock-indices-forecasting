@@ -1,5 +1,6 @@
-from pydantic import BaseModel, PositiveInt
 from datetime import datetime
+
+from pydantic import BaseModel, PositiveInt
 
 
 class HealthCheckResponse(BaseModel):
