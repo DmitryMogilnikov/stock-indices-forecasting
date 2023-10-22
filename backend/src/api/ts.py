@@ -17,7 +17,6 @@ router = APIRouter(
     tags=["Timeseries API"],
 )
 
-t = Literal["COST", "MAX", "MIN"]
 
 
 @router.post(
