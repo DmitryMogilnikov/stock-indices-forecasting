@@ -25,12 +25,12 @@ async def add_data_from_moex_by_ticker_route(
     start: str,
     end: str,
 ) -> None:
-    start, end = moex_service.define_time_range_with_minimum_duration(
-        start,
-        end
-    )
-
     try:
+        start, end = moex_service.define_time_range_with_minimum_duration(
+            start,
+            end
+        )
+
         df = moex_service.get_historical_information(name, start, end)
         costs_with_timestamps = moex_service.get_values_with_timestamps(
             df['TRADEDATE'],
@@ -53,11 +53,14 @@ async def add_data_from_moex_by_ticker_route(
             df['LOW']
         )
 
-    except MismatchSizeError as err:
-        raise HTTPException(status_code=500, detail=str(err))
+    except moex.InvalidDateFormat as err:
+        raise HTTPException(status_code=400, detail=str(err))
 
     except (moex.TickerNotFoundError, moex.DataNotFoundForThisTime) as err:
         raise HTTPException(status_code=404, detail=str(err))
+
+    except MismatchSizeError as err:
+        raise HTTPException(status_code=500, detail=str(err))
 
     ts_api.add_points(
         name,

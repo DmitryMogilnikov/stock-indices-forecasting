@@ -1,10 +1,17 @@
 from datetime import datetime
+from backend.src.exceptions import moex
 import pytz
 
 
 def iso_to_timestamp(iso_date: str) -> float:
     moscow_timezone = pytz.timezone('Europe/Moscow')
-    iso_date = datetime.fromisoformat(iso_date).replace(tzinfo=moscow_timezone)
+    try:
+        iso_date = datetime.\
+            fromisoformat(iso_date).\
+            replace(tzinfo=moscow_timezone)
+    except ValueError as err:
+        raise moex.InvalidDateFormat(err)
+
     return iso_date.timestamp()
 
 

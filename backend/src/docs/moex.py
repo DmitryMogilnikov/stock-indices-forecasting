@@ -9,11 +9,23 @@ add_data_from_moex_by_ticker_description = """
 """
 
 add_data_from_moex_by_ticker_responses = {
+    400: {
+        "description": "Invalid input format",
+        "content": {
+            "application/json": {
+                "example": {
+                    "detail": "Invalid isoformat string: '3013-12:23'"
+                },
+            },
+        },
+    },
     404: {
         "description": "Ticker not found",
         "content": {
             "application/json": {
-                "example": {"detail": "Ticker not found: NNNN"},
+                "example": {
+                    "detail": "Ticker not found: NNNN"
+                },
             },
         },
     },
@@ -21,7 +33,9 @@ add_data_from_moex_by_ticker_responses = {
         "description": "Data not found for this time",
         "content": {
             "application/json": {
-                "example": {"detail": "Data not found for this time: from 2025-01-12 to 2025-10-25"},
+                "example": {
+                    "detail": "Data not found for this time: from 2025-01-12 to 2025-10-25"
+                },
             },
         },
     },
@@ -29,7 +43,9 @@ add_data_from_moex_by_ticker_responses = {
         "description": "Mismatched sizes of dates and values error",
         "content": {
             "application/json": {
-                "example": {"detail": "Mismatched sizes of dates and values error"},
+                "example": {
+                    "detail": "Mismatched sizes of dates and values error"
+                },
             },
         },
     },

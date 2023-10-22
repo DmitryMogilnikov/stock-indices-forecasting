@@ -11,3 +11,7 @@ class TickerNotFoundError(MoexExceptions):
 
 class DataNotFoundForThisTime(MoexExceptions):
     pass
+
+
+class InvalidDateFormat(MoexExceptions):
+    pass
