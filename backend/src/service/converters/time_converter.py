@@ -1,6 +1,7 @@
 from datetime import datetime
 import pytz
 
+
 def iso_to_timestamp(iso_date: str) -> float:
     moscow_timezone = pytz.timezone('Europe/Moscow')
     iso_date = datetime.fromisoformat(iso_date).replace(tzinfo=moscow_timezone)

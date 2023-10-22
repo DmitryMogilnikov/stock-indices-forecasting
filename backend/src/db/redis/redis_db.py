@@ -6,7 +6,10 @@ from db.abstract_db import AbstractDatabase
 
 
 class RedisDatabase(AbstractDatabase):
-    db: redis.Redis = redis.Redis.from_url(redis_config.redis_dsn, socket_connect_timeout=1)
+    db: redis.Redis = redis.Redis.from_url(
+        redis_config.redis_dsn,
+        socket_connect_timeout=1
+    )
 
     @validate_call
     def check_connection(self) -> bool:
