@@ -1,18 +1,19 @@
-import ts_data as td
+from backend.src.service import ts_data as td
+
 
 def test_calc_integral_sum():
-    # Case when input data is empty
-    assert td.calc_integral_sum([]).equals(td.pd.DataFrame())
+    # The case when input data is empty
+    assert td.calc_integral_sum(td.pd.DataFrame()).equals(td.pd.DataFrame())
 
     # Correct evaluating #1
-    data = [{'TRADEDATE': '2023-10-16', 'OPEN': 264, 'CLOSE': 268.15, 'HIGH': 269.2,
+    data = td.pd.DataFrame([{'TRADEDATE': '2023-10-16', 'OPEN': 264, 'CLOSE': 268.15, 'HIGH': 269.2,
              'LOW': 263.51, 'VALUE': 14344201420.1},
             {'TRADEDATE': '2023-10-17', 'OPEN': 268.3, 'CLOSE': 270, 'HIGH': 271.97,
              'LOW': 266.91, 'VALUE': 13825850433.3},
             {'TRADEDATE': '2023-10-18', 'OPEN': 270, 'CLOSE': 267.9,
              'HIGH': 271.19, 'LOW': 266.11, 'VALUE': 10845314693.3},
             {'TRADEDATE': '2023-10-19', 'OPEN': 267.13, 'CLOSE': 268.65,
-             'HIGH': 271, 'LOW': 266.28, 'VALUE': 9007682323.1}]
+             'HIGH': 271, 'LOW': 266.28, 'VALUE': 9007682323.1}])
     df = td.pd.DataFrame([{'TRADEDATE': '2023-10-16', 'OPEN': 264, 'CLOSE': 268.15, 'HIGH': 269.2,
              'LOW': 263.51, 'VALUE': 14344201420.1, 'integ_val': 264},
             {'TRADEDATE': '2023-10-17', 'OPEN': 268.3, 'CLOSE': 270, 'HIGH': 271.97,
@@ -23,15 +24,21 @@ def test_calc_integral_sum():
              'HIGH': 271, 'LOW': 266.28, 'VALUE': 9007682323.1, 'integ_val': 1069.43}])
     assert td.calc_integral_sum(data).equals(df)
 
+    # The case when input column is wrong
+    assert td.calc_integral_sum(data, column='open').equals(td.pd.DataFrame())
+
+    # The case when input column is not exist
+    assert td.calc_integral_sum(data, column='sum').equals(td.pd.DataFrame())
+
     # Correct evaluating #2
-    data = [{'TRADEDATE': '2023-10-16', 'OPEN': 2528.8, 'CLOSE': 2530,
+    data = td.pd.DataFrame([{'TRADEDATE': '2023-10-16', 'OPEN': 2528.8, 'CLOSE': 2530,
              'HIGH': 2552, 'LOW': 2520.8, 'VALUE': 1714654649.2},
             {'TRADEDATE': '2023-10-17', 'OPEN': 2527, 'CLOSE': 2527.4,
              'HIGH': 2540.6, 'LOW': 2509.6, 'VALUE': 1358663128.6},
             {'TRADEDATE': '2023-10-18', 'OPEN': 2522.2, 'CLOSE': 2527.2,
              'HIGH': 2539, 'LOW': 2511.8, 'VALUE': 1370957296.4},
             {'TRADEDATE': '2023-10-19', 'OPEN': 2520.8, 'CLOSE': 2660.6,
-             'HIGH': 2675.4, 'LOW': 2517, 'VALUE': 8599584035}]
+             'HIGH': 2675.4, 'LOW': 2517, 'VALUE': 8599584035}])
     df = td.pd.DataFrame([{'TRADEDATE': '2023-10-16', 'OPEN': 2528.8, 'CLOSE': 2530,
              'HIGH': 2552, 'LOW': 2520.8, 'VALUE': 1714654649.2, 'integ_val': 2528.8},
             {'TRADEDATE': '2023-10-17', 'OPEN': 2527, 'CLOSE': 2527.4,
@@ -41,6 +48,25 @@ def test_calc_integral_sum():
             {'TRADEDATE': '2023-10-19', 'OPEN': 2520.8, 'CLOSE': 2660.6,
              'HIGH': 2675.4, 'LOW': 2517, 'VALUE': 8599584035,'integ_val': 10098.8}])
     assert td.calc_integral_sum(data).equals(df)
+
+    # The case when the calculated column is selected
+    data = td.pd.DataFrame([{'TRADEDATE': '2023-10-16', 'OPEN': 2528.8, 'CLOSE': 2530,
+             'HIGH': 2552, 'LOW': 2520.8, 'VALUE': 1714654649.2},
+            {'TRADEDATE': '2023-10-17', 'OPEN': 2527, 'CLOSE': 2527.4,
+             'HIGH': 2540.6, 'LOW': 2509.6, 'VALUE': 1358663128.6},
+            {'TRADEDATE': '2023-10-18', 'OPEN': 2522.2, 'CLOSE': 2527.2,
+             'HIGH': 2539, 'LOW': 2511.8, 'VALUE': 1370957296.4},
+            {'TRADEDATE': '2023-10-19', 'OPEN': 2520.8, 'CLOSE': 2660.6,
+             'HIGH': 2675.4, 'LOW': 2517, 'VALUE': 8599584035}])
+    df = td.pd.DataFrame([{'TRADEDATE': '2023-10-16', 'OPEN': 2528.8, 'CLOSE': 2530,
+                           'HIGH': 2552, 'LOW': 2520.8, 'VALUE': 1714654649.2, 'integ_val': 2530.0},
+                          {'TRADEDATE': '2023-10-17', 'OPEN': 2527, 'CLOSE': 2527.4,
+                           'HIGH': 2540.6, 'LOW': 2509.6, 'VALUE': 1358663128.6, 'integ_val': 5057.4},
+                          {'TRADEDATE': '2023-10-18', 'OPEN': 2522.2, 'CLOSE': 2527.2,
+                           'HIGH': 2539, 'LOW': 2511.8, 'VALUE': 1370957296.4, 'integ_val': 7584.6},
+                          {'TRADEDATE': '2023-10-19', 'OPEN': 2520.8, 'CLOSE': 2660.6,
+                           'HIGH': 2675.4, 'LOW': 2517, 'VALUE': 8599584035, 'integ_val': 10245.2}])
+    assert td.calc_integral_sum(data, column='CLOSE').equals(df)
 
 def test_calc_increase_percentage():
     # Case when input data is empty
