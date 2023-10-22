@@ -4,7 +4,7 @@ from fastapi import APIRouter, HTTPException
 
 from core.redis_config import RedisTimeseriesPrefix, redis_config
 from service import ts_data as ts_data_service
-from exceptions import MismatchSizeError, ts
+from backend.src.exceptions import MismatchSizeError, ts
 from db.redis.redis_ts_api import ts_api
 from docs.ts import (add_one_point_route_description,
                      add_points_route_description,

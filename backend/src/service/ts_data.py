@@ -47,6 +47,6 @@ def get_historical_information(ticker: str, start_date: str, end_date: str) -> p
         df = df.reset_index(drop=True)
 
         if df.empty:
-            raise ts.DataNotFoundForThisTime(f"Data not found for this time: {start_date}-{end_date}")
+            raise ts.DataNotFoundForThisTime(f"Data not found for this time: from {start_date} to {end_date}")
 
         return df
