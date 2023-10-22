@@ -1,6 +1,6 @@
-from backend.src.exceptions import BusinessExpection
+from backend.src.exceptions import BusinessException
 
-class TimestampExceptions(BusinessExpection):
+class TimestampExceptions(BusinessException):
     pass
 
 class TickerNotFoundError(TimestampExceptions):
