@@ -1,7 +1,9 @@
 from enum import Enum
-from pydantic import Field
-from core.base_config import BaseConfig
 from typing import Literal
+
+from pydantic import Field
+
+from core.base_config import BaseConfig
 
 
 class RedisConfig(BaseConfig):

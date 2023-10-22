@@ -1,7 +1,6 @@
-from core.redis_config import redis_config, redis_ts_prefixes
 from pydantic import validate_call
-from typing import Literal
-from enum import Enum
+
+from core.redis_config import redis_config, redis_ts_prefixes
 
 
 class RedisNameManager:
@@ -12,7 +11,7 @@ class RedisNameManager:
     @validate_call
     def redis_ts_name(self, name: str, prefix: redis_ts_prefixes) -> str:
         return self.create_redis_name(name=name, prefix=prefix)
-    
+
     @validate_call
     def from_redis_name(self, name: str) -> str:
         return name.split(redis_config.redis_separator)[-1]
