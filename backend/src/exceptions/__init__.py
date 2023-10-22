@@ -1,5 +1,6 @@
-class GeneralExceptions(Exception):
+class BusinessExpection(Exception):
     pass
 
-class MismatchSizeError(GeneralExceptions):
-    ...
+class MismatchSizeError(BusinessExpection):
+    pass
+
