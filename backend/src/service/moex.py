@@ -34,7 +34,7 @@ def get_values_with_timestamps(
 
     values_with_timestamps = [
         (
-            int(time_converter.iso_to_timestamp(date)), 
+            int(time_converter.iso_to_timestamp(date)),
             value
         ) for date, value in zip(dates, values)
     ]
@@ -55,7 +55,9 @@ def find_moex_security(session, ticker):
 
 def get_engine_and_market(features, ticker):
     """Extract engine and market information based on the ticker."""
-    engine, market = features.loc[features['secid'] == ticker].group.values[0].split('_')
+    engine, market = features.loc[
+        features['secid'] == ticker
+    ].group.values[0].split('_')
     return engine, market
 
 
@@ -64,7 +66,15 @@ def get_board_id(features, ticker):
     return features.loc[features.secid == ticker].primary_boardid.values[0]
 
 
-def get_board_history(session, ticker, start_date, end_date, board, market, engine):
+def get_board_history(
+    session,
+    ticker,
+    start_date,
+    end_date,
+    board,
+    market,
+    engine
+):
     """Retrieve historical data for the ticker from the board."""
     return pd.DataFrame(
         apimoex.get_board_history(
@@ -102,7 +112,15 @@ def get_historical_information(ticker, start_date, end_date):
         engine, market = get_engine_and_market(features, ticker)
         board = get_board_id(features, ticker)
 
-        df = get_board_history(session, ticker, start_date, end_date, board, market, engine)
+        df = get_board_history(
+            session,
+            ticker,
+            start_date,
+            end_date,
+            board,
+            market,
+            engine
+        )
         df = filter_and_reset_dataframe(df)
 
         if df.empty:
