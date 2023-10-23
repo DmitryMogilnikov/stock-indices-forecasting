@@ -3,6 +3,14 @@ from exceptions import moex
 import pytz
 
 
+def str_to_iso(date: str) -> datetime:
+    return datetime.strptime(date, "%Y-%m-%d")
+
+
+def iso_to_str(date: datetime) -> str:
+    return date.strftime("%Y-%m-%d")
+
+
 def iso_to_timestamp(iso_date: str) -> float:
     moscow_timezone = pytz.timezone('Europe/Moscow')
     try:

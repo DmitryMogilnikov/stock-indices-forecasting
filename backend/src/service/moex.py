@@ -1,45 +1,42 @@
 import requests
 import apimoex
 import pandas as pd
+import numpy as np
 from service.converters import time_converter
 from exceptions import MismatchSizeError, moex
 from datetime import timedelta
 
 
-HALF_YEAR_IN_MILLISECONDS = timedelta(days=180).total_seconds() * 1000
-
-
 def define_time_range_with_minimum_duration(
     start: str,
     end: str
-) -> (str, str):
-    start_ts = time_converter.iso_to_timestamp(start)
-    end_ts = time_converter.iso_to_timestamp(end)
+) -> tuple[str, str]:
+    try:
+        start = time_converter.str_to_iso(start)
+        end = time_converter.str_to_iso(end)
+    except ValueError as err:
+        raise moex.InvalidDateFormat(err)
 
-    if end_ts - start_ts < HALF_YEAR_IN_MILLISECONDS:
-        end_ts = start_ts + HALF_YEAR_IN_MILLISECONDS
+    end = max(end, start + timedelta(days=180))
 
-    return (
-        time_converter.timestamp_to_iso(start_ts),
-        time_converter.timestamp_to_iso(end_ts)
-    )
+    return (time_converter.iso_to_str(start), time_converter.iso_to_str(end))
 
 
 def get_values_with_timestamps(
     dates: list[str],
     values: list[float]
 ) -> list[tuple[int, float]]:
-    if len(dates) != len(values):
-        raise MismatchSizeError("Mismatched sizes of dates and values error")
+    try:
+        dates = np.vectorize(time_converter.iso_to_timestamp)(dates)
+    except ValueError:
+        return []
 
-    values_with_timestamps = [
-        (
-            int(time_converter.iso_to_timestamp(date)),
-            value
-        ) for date, value in zip(dates, values)
-    ]
+    try:
+        dates_with_values = np.column_stack([dates, values])
+    except Exception:
+        raise MismatchSizeError('Mismatched sizes of dates and values error')
 
-    return values_with_timestamps
+    return [tuple(date_with_value) for date_with_value in dates_with_values]
 
 
 def find_moex_security(session, ticker):
