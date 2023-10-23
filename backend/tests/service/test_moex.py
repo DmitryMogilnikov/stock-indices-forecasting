@@ -1,9 +1,16 @@
 import pytest
 from backend.src.service import moex
-from backend.src.exceptions import MismatchSizeError
 
 
 def test_define_time_range_with_minimum_duration():
+    # Case with invalid date format
+    with pytest.raises(Exception) as err:
+        moex.define_time_range_with_minimum_duration(
+            "2023:01?01",
+            "2023-01-02"
+        )
+    assert str(err.value) == "Invalid isoformat string: '2023:01?01'"
+
     # Case where the start is less than end on half a year
     assert moex.define_time_range_with_minimum_duration(
         "2023-01-01",
@@ -24,17 +31,26 @@ def test_define_time_range_with_minimum_duration():
 
 
 def test_get_values_with_timestamps():
+    # Case with invalid date format
+    with pytest.raises(Exception) as err:
+        moex.get_values_with_timestamps(
+            ["2023:01?01", "2023-01-02"],
+            [0.5, 0.4]
+        )
+    assert str(err.value) == "Invalid isoformat string: '2023:01?01'"
+
     # Case where len(dates) != len(values)
-    with pytest.raises(MismatchSizeError):
+    with pytest.raises(Exception) as err:
         moex.get_values_with_timestamps(["2023-01-01", "2023-01-02"], [0.5])
+    assert str(err.value) == "Mismatched sizes of dates and values error"
 
     # Correct case
     assert moex.get_values_with_timestamps(
         ["2023-01-01", "2023-01-02"],
         [0.5, 0.4]
     ) == [
-        (1672522200, 0.5),
-        (1672608600, 0.4)
+        (1672522200000, 0.5),
+        (1672608600000, 0.4)
     ]
 
     # Case with empty lists

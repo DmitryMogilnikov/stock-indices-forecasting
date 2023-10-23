@@ -1,4 +1,4 @@
-from backend.src.exceptions import BusinessException
+from exceptions import BusinessException
 
 
 class MoexExceptions(BusinessException):

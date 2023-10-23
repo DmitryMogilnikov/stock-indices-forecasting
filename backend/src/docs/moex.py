@@ -20,21 +20,12 @@ add_data_from_moex_by_ticker_responses = {
         },
     },
     404: {
-        "description": "Ticker not found",
+        "description": "Not found",
         "content": {
             "application/json": {
                 "example": {
-                    "detail": "Ticker not found: NNNN"
-                },
-            },
-        },
-    },
-    404: {
-        "description": "Data not found for this time",
-        "content": {
-            "application/json": {
-                "example": {
-                    "detail": "Data not found for this time: from 2025-01-12 to 2025-10-25"
+                    "detail1": "Ticker not found: NNNN",
+                    "detail2": "Data not found for this time: from 2025-01-12 to 2025-10-25"
                 },
             },
         },
