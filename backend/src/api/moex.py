@@ -4,8 +4,8 @@ from core.redis_config import redis_config
 from service import moex as moex_service
 from exceptions import MismatchSizeError, moex
 from docs.moex import (
-    add_data_from_moex_by_ticker_description,
-    add_data_from_moex_by_ticker_responses)
+    add_data_by_ticker_description,
+    add_data_by_ticker_responses)
 from db.redis.redis_ts_api import ts_api
 
 router = APIRouter(
@@ -15,12 +15,12 @@ router = APIRouter(
 
 
 @router.post(
-    path="/add_data_from_moex_by_ticker",
+    path="/add_data_by_ticker",
     name="Add data from moex by ticker",
-    description=add_data_from_moex_by_ticker_description,
-    responses=add_data_from_moex_by_ticker_responses
+    description=add_data_by_ticker_description,
+    responses=add_data_by_ticker_responses
 )
-async def add_data_from_moex_by_ticker_route(
+async def add_data_by_ticker_route(
     name: str,
     start: str,
     end: str,

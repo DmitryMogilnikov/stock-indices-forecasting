@@ -1,4 +1,4 @@
-add_data_from_moex_by_ticker_description = """
+add_data_by_ticker_description = """
     Route for adding data from moex by ticker.
 
     - name: name of timeseries
@@ -8,7 +8,7 @@ add_data_from_moex_by_ticker_description = """
     Returns: None
 """
 
-add_data_from_moex_by_ticker_responses = {
+add_data_by_ticker_responses = {
     400: {
         "description": "Invalid input format",
         "content": {

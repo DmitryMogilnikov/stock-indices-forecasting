@@ -109,7 +109,11 @@ def get_historical_information(ticker, start_date, end_date):
         if features.empty:
             raise moex.TickerNotFoundError(f"Ticker not found: {ticker}")
 
-        engine, market = get_engine_and_market(features, ticker)
+        try:
+            engine, market = get_engine_and_market(features, ticker)
+        except IndexError:
+            raise moex.TickerNotFoundError(f"Ticker not found: {ticker}")
+
         board = get_board_id(features, ticker)
 
         df = get_board_history(
