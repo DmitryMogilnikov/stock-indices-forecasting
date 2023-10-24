@@ -129,7 +129,7 @@ async def get_range_route(
 
     except MismatchSizeError as err:
         raise HTTPException(status_code=500, detail=str(err))
-    
+
     return ts_api.get_range(
         name=name,
         start=start,

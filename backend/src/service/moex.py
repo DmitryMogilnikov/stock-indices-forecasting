@@ -17,9 +17,11 @@ def define_time_range_with_minimum_duration(
         end = time_converter.str_to_iso(end)
     except ValueError as err:
         raise moex.InvalidDateFormat(err)
-    
+
     if start > end:
-        raise moex.InvalidDateFormat(f"start ({time_converter.iso_to_str(start)}) cannot be greater than end ({time_converter.iso_to_str(end)})")
+        raise moex.InvalidDateFormat(
+            f"start ({time_converter.iso_to_str(start)}) cannot be greater than end ({time_converter.iso_to_str(end)})"
+        )
 
     start = min(start, end - timedelta(days=180))
 
@@ -137,7 +139,12 @@ def get_historical_information(ticker, start_date, end_date):
         return df
 
 
-def add_data_by_ticker(ts_api: RedisTimeseriesAPI, ticker: str, start: str, end: str) -> None:
+def add_data_by_ticker(
+        ts_api: RedisTimeseriesAPI,
+        ticker: str,
+        start: str,
+        end: str
+) -> None:
     start, end = define_time_range_with_minimum_duration(
         start,
         end

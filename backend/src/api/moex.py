@@ -1,6 +1,5 @@
 from fastapi import APIRouter, HTTPException
 
-from core.redis_config import redis_config
 from service import moex as moex_service
 from exceptions import MismatchSizeError, moex
 from docs.moex import (
