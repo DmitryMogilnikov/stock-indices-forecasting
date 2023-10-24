@@ -12,13 +12,21 @@ def test_define_time_range_with_minimum_duration():
         )
     assert str(err.value) == "time data '2023:01?01' does not match format '%Y-%m-%d'"
 
+    # Case where start is greater that end
+    with pytest.raises(Exception) as err:
+        moex.define_time_range_with_minimum_duration(
+            "2029-01-01",
+            "2023-01-02"
+        )
+    assert str(err.value) == "start (2029-01-01) cannot be greater than end (2023-01-02)"
+
     # Case where the start is less than end on half a year
     assert moex.define_time_range_with_minimum_duration(
-        "2023-01-01",
-        "2023-01-31"
+        "2023-06-30",
+        "2023-07-30"
     ) == (
-        "2023-01-01",
-        "2023-06-30"
+        "2023-01-31",
+        "2023-07-30"
     )
 
     # Case where the start is longer than end on half a year

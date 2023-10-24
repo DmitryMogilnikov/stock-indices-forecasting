@@ -14,7 +14,8 @@ add_data_by_ticker_responses = {
         "content": {
             "application/json": {
                 "example": {
-                    "detail": "Invalid isoformat string: '3013-12:23'"
+                    "detail1": "Invalid isoformat string: '3013-12:23'",
+                    "detail2": "start (2029-01-01) cannot be greater than end (2023-01-01)"
                 },
             },
         },

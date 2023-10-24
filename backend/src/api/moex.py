@@ -26,32 +26,7 @@ async def add_data_by_ticker_route(
     end: str,
 ) -> None:
     try:
-        start, end = moex_service.define_time_range_with_minimum_duration(
-            start,
-            end
-        )
-
-        df = moex_service.get_historical_information(name, start, end)
-        costs_with_timestamps = moex_service.get_values_with_timestamps(
-            df['TRADEDATE'],
-            df['MARKETPRICE2']
-        )
-        opens_with_timestamps = moex_service.get_values_with_timestamps(
-            df['TRADEDATE'],
-            df['OPEN']
-        )
-        closes_with_timestamps = moex_service.get_values_with_timestamps(
-            df['TRADEDATE'],
-            df['CLOSE']
-        )
-        maxs_with_timestamps = moex_service.get_values_with_timestamps(
-            df['TRADEDATE'],
-            df['HIGH']
-        )
-        mins_with_timestamps = moex_service.get_values_with_timestamps(
-            df['TRADEDATE'],
-            df['LOW']
-        )
+        moex_service.add_data_by_ticker(ts_api, name, start, end)
 
     except moex.InvalidDateFormat as err:
         raise HTTPException(status_code=400, detail=str(err))
@@ -61,29 +36,3 @@ async def add_data_by_ticker_route(
 
     except MismatchSizeError as err:
         raise HTTPException(status_code=500, detail=str(err))
-
-    ts_api.add_points(
-        name,
-        redis_config.redis_cost_key,
-        costs_with_timestamps
-    )
-    ts_api.add_points(
-        name,
-        redis_config.redis_open_key,
-        opens_with_timestamps
-    )
-    ts_api.add_points(
-        name,
-        redis_config.redis_close_key,
-        closes_with_timestamps
-    )
-    ts_api.add_points(
-        name,
-        redis_config.redis_max_key,
-        maxs_with_timestamps
-    )
-    ts_api.add_points(
-        name,
-        redis_config.redis_min_key,
-        mins_with_timestamps
-    )
