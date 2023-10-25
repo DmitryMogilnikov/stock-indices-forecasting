@@ -9,7 +9,8 @@ from docs.ts import (
     delete_ts_route_description,
     get_last_point_route_description,
     get_range_route_description,
-    get_range_route_responses
+    get_range_route_responses,
+    check_existing_ts_route_description
 )
 
 from service.converters.time_converter import iso_to_timestamp
@@ -61,6 +62,19 @@ async def add_points_route(
         prefix=prefix.value
     )
 
+@router.get(
+    path="/check_existing_key",
+    name="Check if ts exist in Redis",
+    description=check_existing_ts_route_description,
+)
+async def get_last_point_route(
+    name: str,
+    prefix: RedisTimeseriesPrefix,
+) -> bool:
+    return ts_api.check_existing_ts(
+        name=name,
+        prefix=prefix.value
+    )
 
 @router.get(
     path="/get_last_point",
