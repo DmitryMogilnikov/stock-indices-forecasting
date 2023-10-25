@@ -14,6 +14,7 @@ class RedisConfig(BaseConfig):
     redis_max_key: str = Field(..., env="REDIS_MAX_KEY")
     redis_min_key: str = Field(..., env="REDIS_MIN_KEY")
     redis_separator: str = Field(..., env="REDIS_SEPARATOR")
+    redis_duplicate_policy: str = Field(..., env="REDIS_DUPLICATE_POLICY")
 
 
 redis_config = RedisConfig()

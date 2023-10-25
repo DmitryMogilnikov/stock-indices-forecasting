@@ -6,7 +6,10 @@ from db.abstract_db import AbstractDatabase
 
 
 class RedisDatabase(AbstractDatabase):
-    db: redis.Redis = redis.Redis.from_url(redis_config.redis_dsn, socket_connect_timeout=1)
+    db: redis.Redis = redis.Redis.from_url(
+        redis_config.redis_dsn,
+        socket_connect_timeout=1
+    )
 
     @validate_call
     def check_connection(self) -> bool:
@@ -27,6 +30,7 @@ class RedisDatabase(AbstractDatabase):
         Returns:
             set[str]: set of keys
         """
+        return {key.decode("utf-8") for key in self.db.scan_iter()}
 
     @validate_call
     def check_existing_key(self, key: str) -> bool:

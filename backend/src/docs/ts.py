@@ -4,7 +4,8 @@ add_one_point_route_description = """
     Args:
     - name: name of timeseries
     - prefix: prefix for timeseries (COST, OPEN, CLOSE, MAX, MIN)
-    - date: date in iso format (2023-01-01T03:00:00). Defaults is "*" - datetime now
+    - date: date in iso format (2023-01-01).
+        Defaults is "*" - datetime now
     - value: timestamp value.
 
     Returns: None
@@ -30,6 +31,16 @@ add_points_route_description = """
     Returns: None
 """
 
+check_existing_ts_route_description = """
+    Route for check existing ts in Redis.
+
+    - name: name of timeseries
+    - prefix: prefix for timeseries (COST, OPEN, CLOSE, MAX, MIN)
+
+    Returns:
+    - bool
+"""
+
 get_last_point_route_description = """
     Route for get last point from Redis timeseries.
 
@@ -49,8 +60,10 @@ get_range_route_description = """
 
     - name: name of timeseries
     - prefix: prefix for timeseries (COST, OPEN, CLOSE, MAX, MIN)
-    - start: date in iso format (2023-01-01T03:00:00). Defaults is "-" - min date in timeseries
-    - end: date in iso format (2023-01-01T03:00:00). Defaults is "+" - max date in timeseries
+    - start: date in iso format (2023-01-01).
+        Defaults is "-" - min date in timeseries
+    - end: date in iso format (2023-01-01).
+        Defaults is "+" - max date in timeseries
     - count: limit to points count in returns
     - reverse: order by date (True = ASC or False = DESC)
 
@@ -73,8 +86,10 @@ delete_range_route_description = """
 
     - name: name of timeseries
     - prefix: prefix for timeseries (COST, OPEN, CLOSE, MAX, MIN)
-    - start: date in iso format (2023-01-01T03:00:00). Defaults is "-" - min date in timeseries
-    - end: date in iso format (2023-01-01T03:00:00). Defaults is "+" - max date in timeseries
+    - start: date in iso format (2023-01-01).
+        Defaults is "-" - min date in timeseries
+    - end: date in iso format (2023-01-01).
+        Defaults is "+" - max date in timeseries
 
     Returns:
     - delete points count (int)
