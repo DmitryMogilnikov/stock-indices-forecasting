@@ -4,19 +4,21 @@ from fastapi import APIRouter
 
 from core.redis_config import RedisTimeseriesPrefix
 from db.redis.redis_ts_api import ts_api
-from docs.ts import (add_one_point_route_description,
-                     add_points_route_description,
-                     delete_range_route_description,
-                     delete_ts_route_description,
-                     get_last_point_route_description,
-                     get_range_route_description)
+from docs.ts import (
+    add_one_point_route_description,
+    add_points_route_description,
+    delete_range_route_description,
+    delete_ts_route_description,
+    get_last_point_route_description,
+    get_range_route_description,
+    check_existing_ts_route_description,
+)
 from service.converters.time_converter import iso_to_timestamp
 
 router = APIRouter(
     prefix="/ts",
     tags=["Timeseries API"],
 )
-
 
 
 @router.post(
@@ -33,7 +35,12 @@ async def add_one_point_route(
     if date != "*":
         date = iso_to_timestamp(date)
 
-    ts_api.add_one_point(name=name, value=value, timestamp=date, prefix=prefix.value)
+    ts_api.add_one_point(
+        name=name,
+        value=value,
+        timestamp=date,
+        prefix=prefix.value
+    )
 
 
 @router.post(
@@ -46,8 +53,25 @@ async def add_points_route(
     prefix: RedisTimeseriesPrefix,
     points: list[tuple[int, float]],
 ) -> None:
-    ts_api.add_points(name=name, points=points, prefix=prefix.value)
+    ts_api.add_points(
+        name=name,
+        points=points,
+        prefix=prefix.value
+    )
 
+@router.get(
+    path="/check_existing_key",
+    name="Check if ts exist in Redis",
+    description=check_existing_ts_route_description,
+)
+async def get_last_point_route(
+    name: str,
+    prefix: RedisTimeseriesPrefix,
+) -> bool:
+    return ts_api.check_existing_ts(
+        name=name,
+        prefix=prefix.value
+    )
 
 @router.get(
     path="/get_last_point",
@@ -58,7 +82,10 @@ async def get_last_point_route(
     name: str,
     prefix: RedisTimeseriesPrefix,
 ) -> tuple[int, float]:
-    return ts_api.get_last_point(name=name, prefix=prefix.value)
+    return ts_api.get_last_point(
+        name=name,
+        prefix=prefix.value
+    )
 
 
 @router.get(
@@ -104,7 +131,12 @@ async def delete_range_route(
         start = iso_to_timestamp(start)
     if end != "+":
         end = iso_to_timestamp(end)
-    return ts_api.delete_range(name=name, start=start, end=end, prefix=prefix.value)
+    return ts_api.delete_range(
+        name=name,
+        start=start,
+        end=end,
+        prefix=prefix.value
+    )
 
 
 @router.delete(
@@ -116,4 +148,7 @@ async def delete_ts_route(
     name: str,
     prefix: RedisTimeseriesPrefix = RedisTimeseriesPrefix.cost,
 ) -> None:
-    ts_api.delete_ts(name=name, prefix=prefix.value)
+    ts_api.delete_ts(
+        name=name,
+        prefix=prefix.value
+    )
