@@ -20,8 +20,6 @@ router = APIRouter(
     tags=["Timeseries API"],
 )
 
-t = Literal["COST", "MAX", "MIN"]
-
 
 @router.post(
     path="/add_one_point",
