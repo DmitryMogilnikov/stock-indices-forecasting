@@ -1,25 +1,26 @@
-from typing import Literal
-
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 
 from core.redis_config import RedisTimeseriesPrefix
 from db.redis.redis_ts_api import ts_api
-from service import ts_service
-from docs.ts import (add_one_point_route_description,
-                     add_points_route_description,
-                     delete_range_route_description,
-                     delete_ts_route_description,
-                     get_last_point_route_description,
-                     get_range_route_description,
-                     get_days_to_target_reduction)
+from docs.ts import (
+    add_one_point_route_description,
+    add_points_route_description,
+    delete_range_route_description,
+    delete_ts_route_description,
+    get_last_point_route_description,
+    get_range_route_description,
+    get_range_route_responses
+)
+
 from service.converters.time_converter import iso_to_timestamp
+from service import moex as moex_service
+from exceptions import moex, MismatchSizeError
+import redis
 
 router = APIRouter(
     prefix="/ts",
     tags=["Timeseries API"],
 )
-
-t = Literal["COST", "MAX", "MIN"]
 
 
 @router.post(
@@ -36,7 +37,12 @@ async def add_one_point_route(
     if date != "*":
         date = iso_to_timestamp(date)
 
-    ts_api.add_one_point(name=name, value=value, timestamp=date, prefix=prefix.value)
+    ts_api.add_one_point(
+        name=name,
+        value=value,
+        timestamp=date,
+        prefix=prefix.value
+    )
 
 
 @router.post(
@@ -49,7 +55,11 @@ async def add_points_route(
     prefix: RedisTimeseriesPrefix,
     points: list[tuple[int, float]],
 ) -> None:
-    ts_api.add_points(name=name, points=points, prefix=prefix.value)
+    ts_api.add_points(
+        name=name,
+        points=points,
+        prefix=prefix.value
+    )
 
 
 @router.get(
@@ -61,13 +71,17 @@ async def get_last_point_route(
     name: str,
     prefix: RedisTimeseriesPrefix,
 ) -> tuple[int, float]:
-    return ts_api.get_last_point(name=name, prefix=prefix.value)
+    return ts_api.get_last_point(
+        name=name,
+        prefix=prefix.value
+    )
 
 
 @router.get(
     path="/get_range",
     name="Get range points from timeseries",
     description=get_range_route_description,
+    responses=get_range_route_responses
 )
 async def get_range_route(
     name: str,
@@ -77,10 +91,43 @@ async def get_range_route(
     count: int | None = None,
     reverse: bool = False,
 ) -> list[tuple[float, float]]:
-    if start != "-":
-        start = iso_to_timestamp(start)
-    if end != "+":
-        end = iso_to_timestamp(end)
+    start_date = start
+    end_date = end
+    try:
+        if start != "-":
+            start = iso_to_timestamp(start)
+        if end != "+":
+            end = iso_to_timestamp(end)
+    except moex.InvalidDateFormat as err:
+        raise HTTPException(status_code=400, detail=str(err))
+
+    is_key_exist = True
+    try:
+        ts_range = ts_api.get_range(
+            name=name,
+            start=start,
+            end=end,
+            count=count,
+            reverse=reverse,
+            prefix=prefix.value,
+        )
+    except redis.ResponseError:
+        is_key_exist = False
+
+    if start_date == "-" or end_date == "+" or (is_key_exist and len(ts_range) != 0):
+        return ts_range
+
+    try:
+        moex_service.add_data_by_ticker(ts_api, name, start_date, end_date)
+
+    except moex.InvalidDateFormat as err:
+        raise HTTPException(status_code=400, detail=str(err))
+
+    except (moex.TickerNotFoundError, moex.DataNotFoundForThisTime) as err:
+        raise HTTPException(status_code=404, detail=str(err))
+
+    except MismatchSizeError as err:
+        raise HTTPException(status_code=500, detail=str(err))
 
     return ts_api.get_range(
         name=name,
@@ -107,7 +154,12 @@ async def delete_range_route(
         start = iso_to_timestamp(start)
     if end != "+":
         end = iso_to_timestamp(end)
-    return ts_api.delete_range(name=name, start=start, end=end, prefix=prefix.value)
+    return ts_api.delete_range(
+        name=name,
+        start=start,
+        end=end,
+        prefix=prefix.value
+    )
 
 
 @router.delete(
@@ -119,23 +171,7 @@ async def delete_ts_route(
     name: str,
     prefix: RedisTimeseriesPrefix = RedisTimeseriesPrefix.cost,
 ) -> None:
-    ts_api.delete_ts(name=name, prefix=prefix.value)
-
-@router.get(
-    path="/get_days_to_target_reduction",
-    name="Get the number of days the initial percentage increase decreases by a given percentage",
-    description=get_days_to_target_reduction,
-)
-async def get_days_to_target_reduction(
-    name: str,
-    start: str | int = "-",
-    end: str | int = "+",
-    target_reduction: float = 1.0,
-) -> list[int]:
-    if start != "-":
-        start = iso_to_timestamp(start)
-    if end != "+":
-        end = iso_to_timestamp(end)
-
-    percentage_changes_test: list[float] = [0.53, 0.50, 0.45, 0.32] # CHANGE AFTER PR #19
-    return ts_service.calculate_days_to_target_reduction(percentage_changes_test, target_reduction)
+    ts_api.delete_ts(
+        name=name,
+        prefix=prefix.value
+    )

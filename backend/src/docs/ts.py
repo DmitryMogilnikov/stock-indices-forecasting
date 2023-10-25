@@ -4,7 +4,8 @@ add_one_point_route_description = """
     Args:
     - name: name of timeseries
     - prefix: prefix for timeseries (COST, OPEN, CLOSE, MAX, MIN)
-    - date: date in iso format (2023-01-01T03:00:00). Defaults is "*" - datetime now
+    - date: date in iso format (2023-01-01).
+        Defaults is "*" - datetime now
     - value: timestamp value.
 
     Returns: None
@@ -30,6 +31,16 @@ add_points_route_description = """
     Returns: None
 """
 
+check_existing_ts_route_description = """
+    Route for check existing ts in Redis.
+
+    - name: name of timeseries
+    - prefix: prefix for timeseries (COST, OPEN, CLOSE, MAX, MIN)
+
+    Returns:
+    - bool
+"""
+
 get_last_point_route_description = """
     Route for get last point from Redis timeseries.
 
@@ -49,8 +60,10 @@ get_range_route_description = """
 
     - name: name of timeseries
     - prefix: prefix for timeseries (COST, OPEN, CLOSE, MAX, MIN)
-    - start: date in iso format (2023-01-01T03:00:00). Defaults is "-" - min date in timeseries
-    - end: date in iso format (2023-01-01T03:00:00). Defaults is "+" - max date in timeseries
+    - start: date in iso format (2023-01-01).
+        Defaults is "-" - min date in timeseries
+    - end: date in iso format (2023-01-01).
+        Defaults is "+" - max date in timeseries
     - count: limit to points count in returns
     - reverse: order by date (True = ASC or False = DESC)
 
@@ -68,13 +81,50 @@ get_range_route_description = """
         ]
 """
 
+get_range_route_responses = {
+    400: {
+        "description": "Invalid input format",
+        "content": {
+            "application/json": {
+                "example": {
+                    "detail1": "Invalid isoformat string: '3013-12:23'",
+                    "detail2": "start (2029-01-01) cannot be greater than end (2023-01-01)"
+                },
+            },
+        },
+    },
+    404: {
+        "description": "Not found",
+        "content": {
+            "application/json": {
+                "example": {
+                    "detail1": "Ticker not found: NNNN",
+                    "detail2": "Data not found for this time: from 2025-01-12 to 2025-10-25"
+                },
+            },
+        },
+    },
+    500: {
+        "description": "Mismatched sizes of dates and values error",
+        "content": {
+            "application/json": {
+                "example": {
+                    "detail": "Mismatched sizes of dates and values error"
+                },
+            },
+        },
+    },
+}
+
 delete_range_route_description = """
     Route for delete range of points from Redis timeseries.
 
     - name: name of timeseries
     - prefix: prefix for timeseries (COST, OPEN, CLOSE, MAX, MIN)
-    - start: date in iso format (2023-01-01T03:00:00). Defaults is "-" - min date in timeseries
-    - end: date in iso format (2023-01-01T03:00:00). Defaults is "+" - max date in timeseries
+    - start: date in iso format (2023-01-01).
+        Defaults is "-" - min date in timeseries
+    - end: date in iso format (2023-01-01).
+        Defaults is "+" - max date in timeseries
 
     Returns:
     - delete points count (int)
@@ -87,20 +137,4 @@ delete_ts_route_description = """
     - prefix: prefix for timeseries (COST, OPEN, CLOSE, MAX, MIN)
 
     Returns: None
-"""
-
-get_days_to_target_reduction = """
-    Route for get the number of days the initial percentage increase decreases by a given percentage.
-
-    - name: name of timeseries
-    - start: date in iso format (2023-01-01T03:00:00). Defaults is "-" - min date in timeseries
-    - end: date in iso format (2023-01-01T03:00:00). Defaults is "+" - max date in timeseries
-    - target_reduction: the number of percent by which there should be a reduction in float. Defaults is 1%
-
-    Returns:
-    - days in format:
-        [
-            int value,
-            int value
-        ]
 """

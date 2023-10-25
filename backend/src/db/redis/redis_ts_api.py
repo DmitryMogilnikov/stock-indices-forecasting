@@ -1,7 +1,7 @@
 from pydantic import validate_call
 from redis import Redis
 
-from core.redis_config import redis_ts_prefixes
+from core.redis_config import redis_ts_prefixes, redis_config
 from db.redis.redis_db import RedisDatabase
 from db.redis.redis_name_manager import redis_name_manager
 
@@ -10,17 +10,33 @@ class RedisTimeseriesAPI:
     redis_db: RedisDatabase = RedisDatabase()
     db_ts: Redis.ts = redis_db.db.ts()
 
-    def add_one_point(self, name: str, prefix: redis_ts_prefixes, value: float, timestamp: str | int = "*") -> None:
+    def add_one_point(
+        self,
+        name: str,
+        prefix: redis_ts_prefixes,
+        value: float,
+        timestamp: str | int = "*"
+    ) -> None:
         """Add point to Redis timeseries.
 
         Args:
             ts_name (str): name
         """
         key = redis_name_manager.redis_ts_name(name=name, prefix=prefix)
-        return self.db_ts.add(key, timestamp, value)
+        return self.db_ts.add(
+            key,
+            timestamp,
+            value,
+            duplicate_policy=redis_config.redis_duplicate_policy
+        )
 
     @validate_call
-    def add_points(self, name: str, prefix: redis_ts_prefixes, points: list[tuple[int, float]]) -> None:
+    def add_points(
+        self,
+        name: str,
+        prefix: redis_ts_prefixes,
+        points: list[tuple[int, float]]
+    ) -> None:
         """Add points to Redis timeseries.
 
         Args:
@@ -30,11 +46,25 @@ class RedisTimeseriesAPI:
         key = redis_name_manager.redis_ts_name(name=name, prefix=prefix)
         pipeline = self.db_ts.pipeline()
         for timestamp, value in points:
-            pipeline.add(key, timestamp, value)
+            pipeline.add(
+                key,
+                timestamp,
+                value,
+                duplicate_policy=redis_config.redis_duplicate_policy
+            )
         pipeline.execute()
 
     @validate_call
-    def get_last_point(self, prefix: redis_ts_prefixes, name: str) -> tuple[int, float]:
+    def check_existing_ts(self, name: str, prefix: str) -> bool:
+        key = redis_name_manager.redis_ts_name(name=name, prefix=prefix)
+        return self.redis_db.check_existing_key(key=key)
+
+    @validate_call
+    def get_last_point(
+        self,
+        prefix: redis_ts_prefixes,
+        name: str
+    ) -> tuple[int, float]:
         """Get last point from Redis timeseries.
 
         Args:
@@ -62,16 +92,29 @@ class RedisTimeseriesAPI:
             name (str): name
             start: (str | int): start timestamp. Defaults = '-'
             end: (str | int): end timestamp. Defaults = '-'
-            count: (int | None): limit for count of return points. Defaults = None
-            reverse (bool): is get range from end to start. Defaults = False
+            count: (int | None): limit for count of return points.
+                Defaults = None
+            reverse (bool): is get range from end to start.
+                Defaults = False
 
         Returns:
-            list[tuple[float, float]]: list of points [(timestamp, value), (timestamp, value), ...]
+            list[tuple[float, float]]: list of points
+                [(timestamp, value), (timestamp, value), ...]
         """
         key = redis_name_manager.redis_ts_name(name=name, prefix=prefix)
         if reverse:
-            return self.db_ts.revrange(key=key, from_time=start, to_time=end, count=count)
-        return self.db_ts.range(key=key, from_time=start, to_time=end, count=count)
+            return self.db_ts.revrange(
+                key=key,
+                from_time=start,
+                to_time=end,
+                count=count
+            )
+        return self.db_ts.range(
+            key=key,
+            from_time=start,
+            to_time=end,
+            count=count
+        )
 
     @validate_call
     def delete_range(
