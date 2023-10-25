@@ -30,6 +30,7 @@ class RedisDatabase(AbstractDatabase):
         Returns:
             set[str]: set of keys
         """
+        return {key.decode("utf-8") for key in self.db.scan_iter()}
 
     @validate_call
     def check_existing_key(self, key: str) -> bool:

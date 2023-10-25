@@ -31,6 +31,16 @@ add_points_route_description = """
     Returns: None
 """
 
+check_existing_ts_route_description = """
+    Route for check existing ts in Redis.
+
+    - name: name of timeseries
+    - prefix: prefix for timeseries (COST, OPEN, CLOSE, MAX, MIN)
+
+    Returns:
+    - bool
+"""
+
 get_last_point_route_description = """
     Route for get last point from Redis timeseries.
 

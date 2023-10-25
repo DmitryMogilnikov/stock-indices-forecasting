@@ -53,6 +53,11 @@ class RedisTimeseriesAPI:
                 duplicate_policy=redis_config.redis_duplicate_policy
             )
         pipeline.execute()
+    
+    @validate_call
+    def check_existing_ts(self, name: str, prefix: str) -> bool:
+        key = redis_name_manager.redis_ts_name(name=name, prefix=prefix)
+        return self.redis_db.check_existing_key(key=key)
 
     @validate_call
     def get_last_point(
