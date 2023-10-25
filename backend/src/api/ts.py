@@ -1,6 +1,6 @@
 from typing import Literal
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 
 from core.redis_config import RedisTimeseriesPrefix
 from db.redis.redis_ts_api import ts_api
@@ -13,7 +13,11 @@ from docs.ts import (
     get_range_route_description,
     check_existing_ts_route_description,
 )
+
 from service.converters.time_converter import iso_to_timestamp
+from service import moex as moex_service
+from exceptions import moex, MismatchSizeError
+import redis
 
 router = APIRouter(
     prefix="/ts",
@@ -92,6 +96,7 @@ async def get_last_point_route(
     path="/get_range",
     name="Get range points from timeseries",
     description=get_range_route_description,
+    responses=get_range_route_responses
 )
 async def get_range_route(
     name: str,
@@ -101,10 +106,43 @@ async def get_range_route(
     count: int | None = None,
     reverse: bool = False,
 ) -> list[tuple[float, float]]:
-    if start != "-":
-        start = iso_to_timestamp(start)
-    if end != "+":
-        end = iso_to_timestamp(end)
+    start_date = start
+    end_date = end
+    try:
+        if start != "-":
+            start = iso_to_timestamp(start)
+        if end != "+":
+            end = iso_to_timestamp(end)
+    except moex.InvalidDateFormat as err:
+        raise HTTPException(status_code=400, detail=str(err))
+
+    is_key_exist = True
+    try:
+        ts_range = ts_api.get_range(
+            name=name,
+            start=start,
+            end=end,
+            count=count,
+            reverse=reverse,
+            prefix=prefix.value,
+        )
+    except redis.ResponseError:
+        is_key_exist = False
+
+    if start_date == "-" or end_date == "+" or (is_key_exist and len(ts_range) != 0):
+        return ts_range
+
+    try:
+        moex_service.add_data_by_ticker(ts_api, name, start_date, end_date)
+
+    except moex.InvalidDateFormat as err:
+        raise HTTPException(status_code=400, detail=str(err))
+
+    except (moex.TickerNotFoundError, moex.DataNotFoundForThisTime) as err:
+        raise HTTPException(status_code=404, detail=str(err))
+
+    except MismatchSizeError as err:
+        raise HTTPException(status_code=500, detail=str(err))
 
     return ts_api.get_range(
         name=name,

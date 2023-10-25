@@ -28,4 +28,6 @@ class RedisTimeseriesPrefix(str, Enum):
     min = redis_config.redis_min_key
 
 
-redis_ts_prefixes = Literal[tuple([prefix.value for prefix in RedisTimeseriesPrefix])]
+redis_ts_prefixes = Literal[
+    tuple([prefix.value for prefix in RedisTimeseriesPrefix])
+]
