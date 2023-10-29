@@ -1,10 +1,10 @@
 import React from "react";
-import "./../styles/Main.scss";
+import "./../styles/Main_DataFillingForm.model.scss";
 
-function Main() {
+function Main_DataFillingForm() {
     return (
-        <div className="Main">
-            <form name="dataOutputSettings" className="flexbox_form">
+        <div className="Main_DataFillingForm">
+            <form id="dataOutputSettings" name="dataOutputSettings" className="dataFillingForm">
                 <div>
                     <label htmlFor="indexCode">Код индекса</label>
                 </div>
@@ -33,4 +33,4 @@ function Main() {
     )
 }
 
-export default Main
+export default Main_DataFillingForm
