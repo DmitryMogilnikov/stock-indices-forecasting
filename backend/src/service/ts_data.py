@@ -1,22 +1,12 @@
-from typing import List
+import numpy as np
 
 
-def calc_integral_sum(prices: List[float]) -> List[float]:
-    """
-    :param prices:
-        a prices list
-    :return:
-        a newly calculated integral sum list
-    """
-
+def calc_integral_sum(prices: list[float]) -> np.ndarray[float]:
     if not prices:
-        return []
-    result: List[float] = prices
-    for i in range(1, len(result)):
-        result[i] = prices[i]+result[i-1]
-    return result
+        return np.array(0.0)
+    return np.cumsum(prices)
 
-def calc_increase_percentage(integ_sum: List[float]) -> list[float]:
-    if not integ_sum:
-        return []
-    return [0.0]+[(integ_sum[i]/integ_sum[i - 1] - 1.0) * 100.0 for i in range(1, len(integ_sum))]
+def calc_increase_percentage(integ_sum: np.ndarray[float]) -> np.ndarray[float]:
+    if integ_sum.ndim and integ_sum.size == 0:
+        return np.array(0.0)
+    return np.insert((integ_sum[1:] / integ_sum[:-1] - 1) * 100.0, 0, 0.0)
