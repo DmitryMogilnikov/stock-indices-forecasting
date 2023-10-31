@@ -1,6 +1,6 @@
 import pytest as pytest
 
-import backend.src.service import ts_data as td
+import backend.src.service import integral_sum as td
 
 
 @pytest.mark.parametrize(
