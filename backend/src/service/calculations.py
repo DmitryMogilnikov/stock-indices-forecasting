@@ -1,3 +1,6 @@
+import numpy as np
+
+
 def is_reduction_sufficient(
     initial_percent: float,
     percent_value: float,
@@ -56,3 +59,16 @@ def calculate_days_to_target_reduction(
         ))
 
     return days
+
+
+def calc_integral_sum(prices: list[float]) -> list[float]:
+    if not prices:
+        return [0.0]
+    return np.cumsum(prices).tolist()
+
+
+def calc_increase_percentage(integ_sum: list[float]) -> list[float]:
+    integ_sum_np = np.array(integ_sum)
+    if (integ_sum_np.ndim and integ_sum_np.size == 0) or integ_sum_np.ndim == 0:
+        return [0.0]
+    return np.insert((integ_sum_np[1:] / integ_sum_np[:-1] - 1) * 100.0, 0, 0.0).tolist()
