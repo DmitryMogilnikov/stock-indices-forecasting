@@ -1,8 +1,9 @@
 from fastapi import APIRouter, HTTPException
 from typing import Any
 
-from exceptions import moex
+from exceptions import moex, MismatchSizeError
 from service import calculations as calculations_service
+from service import moex as moex_service
 from db.redis.redis_ts_api import ts_api
 import redis
 from docs.calculations import (
@@ -34,29 +35,54 @@ async def get_days_to_target_reduction(
     start: str | int = "-",
     end: str | int = "+",
     target_reduction: float = 1.0,
-) -> list[int]:
+) -> list[tuple[float, int]]:
+    start_date = start
+    end_date = end
     try:
         if start != "-":
             start = iso_to_timestamp(start)
         if end != "+":
             end = iso_to_timestamp(end)
 
-        prices = [t[0] for t in ts_api.get_range(
-            name=name,
-            start=start,
-            end=end,
-            prefix='COST')]
     except moex.InvalidDateFormat as err:
         raise HTTPException(status_code=400, detail=str(err))
-    
-    except redis.ResponseError as err:
-        raise HTTPException(status_code=404, detail=f'Ticker {name} not found in database')
 
-    integral_sums: list[float] = calculations_service.calc_integral_sum(prices)
-    percentage_changes: list[float] = calculations_service.calc_increase_percentage(integral_sums)
-    return calculations_service.calculate_days_to_target_reduction(
-        percentage_changes,
-        target_reduction
+    is_key_exist = True
+    try:
+        days_to_target_reduction = calculations_service.get_days_to_target_reduction_with_timestamp(
+            ts_api=ts_api,
+            ticker=name,
+            start=start,
+            end=end,
+            target_reduction=target_reduction
+        )
+    except redis.ResponseError as err:
+        is_key_exist = False
+
+    if is_key_exist and len(days_to_target_reduction) != 0:
+        return days_to_target_reduction
+
+    if start_date == "-" or end_date == "+":
+        return []
+
+    try:
+        moex_service.add_data_by_ticker(ts_api, name, start_date, end_date)
+
+    except moex.InvalidDateFormat as err:
+        raise HTTPException(status_code=400, detail=str(err))
+
+    except (moex.TickerNotFoundError, moex.DataNotFoundForThisTime) as err:
+        raise HTTPException(status_code=404, detail=str(err))
+
+    except MismatchSizeError as err:
+        raise HTTPException(status_code=500, detail=str(err))
+    
+    return calculations_service.get_days_to_target_reduction_with_timestamp(
+        ts_api=ts_api,
+        ticker=name,
+        start=start,
+        end=end,
+        target_reduction=target_reduction
     )
 
 
@@ -70,25 +96,54 @@ async def get_integral_sum(
     name: str,
     start: str | int = "-",
     end: str | int = "+",
-) -> list[float]:
+) -> list[tuple[float, float]]:
+    start_date = start
+    end_date = end
     try:
         if start != "-":
             start = iso_to_timestamp(start)
         if end != "+":
             end = iso_to_timestamp(end)
 
-        prices = [t[0] for t in ts_api.get_range(
-            name=name,
-            start=start,
-            end=end,
-            prefix='COST')]
     except moex.InvalidDateFormat as err:
         raise HTTPException(status_code=400, detail=str(err))
-    
-    except redis.ResponseError as err:
-        raise HTTPException(status_code=404, detail=f'Ticker {name} not found in database')
 
-    return calculations_service.calc_integral_sum(prices)
+    is_key_exist = True
+    try:
+        integral_sum = calculations_service.get_integral_sum_with_timestamp(
+            ts_api=ts_api,
+            ticker=name,
+            start=start,
+            end=end
+        )
+    except redis.ResponseError as err:
+        is_key_exist = False
+
+    if is_key_exist and len(integral_sum) != 0:
+        return integral_sum
+
+    if start_date == "-" or end_date == "+":
+        return []
+
+    try:
+        moex_service.add_data_by_ticker(ts_api, name, start_date, end_date)
+
+    except moex.InvalidDateFormat as err:
+        raise HTTPException(status_code=400, detail=str(err))
+
+    except (moex.TickerNotFoundError, moex.DataNotFoundForThisTime) as err:
+        raise HTTPException(status_code=404, detail=str(err))
+
+    except MismatchSizeError as err:
+        raise HTTPException(status_code=500, detail=str(err))
+    
+    return calculations_service.get_integral_sum_with_timestamp(
+        ts_api=ts_api,
+        ticker=name,
+        start=start,
+        end=end
+    )
+
 
 @router.get(
     path="/get_increase_percentage",
@@ -100,26 +155,53 @@ async def get_increase_percentage(
     name: str,
     start: str | int = "-",
     end: str | int = "+",
-) -> list[float]:
+) -> list[tuple[float, float]]:
+    start_date = start
+    end_date = end
     try:
         if start != "-":
             start = iso_to_timestamp(start)
         if end != "+":
             end = iso_to_timestamp(end)
 
-        prices = [t[0] for t in ts_api.get_range(
-            name=name,
-            start=start,
-            end=end,
-            prefix='COST')]
     except moex.InvalidDateFormat as err:
         raise HTTPException(status_code=400, detail=str(err))
-    
-    except redis.ResponseError as err:
-        raise HTTPException(status_code=404, detail=f'Ticker {name} not found in database')
 
-    integral_sum = calculations_service.calc_integral_sum(prices)
-    return calculations_service.calc_increase_percentage(integral_sum)
+    is_key_exist = True
+    try:
+        increase_percentage = calculations_service.get_increase_percentage_with_timestamp(
+            ts_api=ts_api,
+            ticker=name,
+            start=start,
+            end=end
+        )
+    except redis.ResponseError as err:
+        is_key_exist = False
+
+    if is_key_exist and len(increase_percentage) != 0:
+        return increase_percentage
+
+    if start_date == "-" or end_date == "+":
+        return []
+
+    try:
+        moex_service.add_data_by_ticker(ts_api, name, start_date, end_date)
+
+    except moex.InvalidDateFormat as err:
+        raise HTTPException(status_code=400, detail=str(err))
+
+    except (moex.TickerNotFoundError, moex.DataNotFoundForThisTime) as err:
+        raise HTTPException(status_code=404, detail=str(err))
+
+    except MismatchSizeError as err:
+        raise HTTPException(status_code=500, detail=str(err))
+    
+    return calculations_service.get_increase_percentage_with_timestamp(
+        ts_api=ts_api,
+        ticker=name,
+        start=start,
+        end=end
+    )
 
 
 @router.get(
@@ -134,58 +216,51 @@ async def get_all_calculations(
     end: str | int = "+",
     target_reduction: float = 1.0,
 ) -> dict[str, Any]:
+    start_date = start
+    end_date = end
     try:
         if start != "-":
             start = iso_to_timestamp(start)
         if end != "+":
             end = iso_to_timestamp(end)
 
-        costs = [t[0] for t in ts_api.get_range(
-            name=name,
-            start=start,
-            end=end,
-            prefix='COST')]
-
-        opens = [t[0] for t in ts_api.get_range(
-            name=name,
-            start=start,
-            end=end,
-            prefix='OPEN')]
-        
-        closes = [t[0] for t in ts_api.get_range(
-            name=name,
-            start=start,
-            end=end,
-            prefix='CLOSE')]
-        
-        maxs = [t[0] for t in ts_api.get_range(
-            name=name,
-            start=start,
-            end=end,
-            prefix='MAX')]
-        
-        mins = [t[0] for t in ts_api.get_range(
-            name=name,
-            start=start,
-            end=end,
-            prefix='MIN')]
     except moex.InvalidDateFormat as err:
         raise HTTPException(status_code=400, detail=str(err))
-    
+
+    is_key_exist = True
+    try:
+        all_calculations = calculations_service.get_all_calculations(
+            ts_api=ts_api,
+            ticker=name,
+            start=start,
+            end=end,
+            target_reduction=target_reduction
+        )
     except redis.ResponseError as err:
-        raise HTTPException(status_code=404, detail=f'Ticker {name} not found in database')
+        is_key_exist = False
 
-    integral_sum = calculations_service.calc_integral_sum(costs)
-    percentage_changes = calculations_service.calc_increase_percentage(integral_sum)
-    days_to_target_reduction = calculations_service.calculate_days_to_target_reduction(percentage_changes, target_reduction)
+    if is_key_exist and len(all_calculations["timestamp"]) != 0:
+        return all_calculations
 
-    return {
-        "cost": costs,
-        "open": opens,
-        "close": closes,
-        "max": maxs,
-        "min": mins,
-        "integral_sum": integral_sum,
-        "percentage_changes": percentage_changes,
-        "days_to_target_reduction": days_to_target_reduction
-    }
+    if start_date == "-" or end_date == "+":
+        return {}
+
+    try:
+        moex_service.add_data_by_ticker(ts_api, name, start_date, end_date)
+
+    except moex.InvalidDateFormat as err:
+        raise HTTPException(status_code=400, detail=str(err))
+
+    except (moex.TickerNotFoundError, moex.DataNotFoundForThisTime) as err:
+        raise HTTPException(status_code=404, detail=str(err))
+
+    except MismatchSizeError as err:
+        raise HTTPException(status_code=500, detail=str(err))
+    
+    return calculations_service.get_all_calculations(
+        ts_api=ts_api,
+        ticker=name,
+        start=start,
+        end=end,
+        target_reduction=target_reduction
+    )

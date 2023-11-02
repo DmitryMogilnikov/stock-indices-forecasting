@@ -128,8 +128,11 @@ async def get_range_route(
     except redis.ResponseError:
         is_key_exist = False
 
-    if start_date == "-" or end_date == "+" or (is_key_exist and len(ts_range) != 0):
+    if is_key_exist and len(ts_range) != 0:
         return ts_range
+    
+    if start_date == "-" or end_date == "+":
+        return []
 
     try:
         moex_service.add_data_by_ticker(ts_api, name, start_date, end_date)

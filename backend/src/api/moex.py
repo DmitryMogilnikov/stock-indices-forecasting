@@ -35,3 +35,6 @@ async def add_data_by_ticker_route(
 
     except MismatchSizeError as err:
         raise HTTPException(status_code=500, detail=str(err))
+    
+    except ValueError as err:
+        raise HTTPException(status_code=500)

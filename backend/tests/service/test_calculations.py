@@ -43,7 +43,7 @@ def test_calculate_days_to_target_reductions(percentage_changes, target_reductio
 
 @pytest.mark.parametrize(
     'data, expected_result',
-    [([], np.array(0.0)),
+    [([], []),
      ([120.8, 136.1, 178.1], np.array([120.8, 256.9, 435.0])),
      ([54.3, 49.6, 61.5], np.array([54.3, 103.9, 165.4]))
      ]
@@ -54,10 +54,20 @@ def test_calc_integral_sum(data, expected_result):
 
 @pytest.mark.parametrize(
     'data, expected_result',
-    [(np.array([]), np.array(0.0)),
-     (np.array([20.0, 40.0, 50.0]), np.array([0.0, 100.0, 25.0])),
-     (np.array([128.0, 136.0, 255.0]), np.array([0.0, 6.25, 87.5]))
+    [([], []),
+     ([20.0, 40.0, 50.0], [0.0, 100.0, 25.0]),
+     ([128.0, 136.0, 255.0], [0.0, 6.25, 87.5])
      ]
 )
 def test_calc_increase_percentage(data, expected_result):
     assert np.array_equal(calculations.calc_increase_percentage(data), expected_result)
+
+
+@pytest.mark.parametrize(
+    'timestamps, values, expected_result',
+    [([], [], []),
+     ([1, 2, 3], [1.0, 2.0, 3.0], [(1, 1.0), (2, 2.0), (3, 3.0)])
+     ]
+)
+def test_get_values_with_timestamps(timestamps, values, expected_result):
+    assert np.array_equal(calculations.get_values_with_timestamps(timestamps, values), expected_result)

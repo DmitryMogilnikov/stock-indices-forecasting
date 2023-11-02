@@ -12,7 +12,7 @@ get_days_to_target_reduction_description = """
     Returns:
     - days in format:
         [
-            int value,
+            timestamp in ms int,
             int value
         ]
 """
@@ -36,6 +36,17 @@ get_days_to_target_reduction_responses = {
             "application/json": {
                 "example": {
                     "detail1": "Ticker NNNN not found in database",
+                    "detail2": "Data not found for this time: from 2025-01-12 to 2025-10-25"
+                },
+            },
+        },
+    },
+    500: {
+        "description": "Mismatched sizes of dates and values error",
+        "content": {
+            "application/json": {
+                "example": {
+                    "detail": "Mismatched sizes of dates and values error"
                 },
             },
         },
@@ -54,7 +65,7 @@ get_integral_sums_description = """
     Returns:
     - integral sums in format:
         [
-            float value,
+            timestamp in ms int,
             float value
         ]
 """
@@ -77,6 +88,17 @@ get_integral_sums_response = {
             "application/json": {
                 "example": {
                     "detail1": "Ticker NNNN not found in database",
+                    "detail2": "Data not found for this time: from 2025-01-12 to 2025-10-25"
+                },
+            },
+        },
+    },
+    500: {
+        "description": "Mismatched sizes of dates and values error",
+        "content": {
+            "application/json": {
+                "example": {
+                    "detail": "Mismatched sizes of dates and values error"
                 },
             },
         },
@@ -95,7 +117,7 @@ get_increase_percentage_description = """
     Returns:
     - increase percentage in format:
         [
-            float value,
+            timestamp in ms int,
             float value
         ]
 """
@@ -118,6 +140,17 @@ get_increase_percentage_response = {
             "application/json": {
                 "example": {
                     "detail1": "Ticker NNNN not found in database",
+                    "detail2": "Data not found for this time: from 2025-01-12 to 2025-10-25"
+                },
+            },
+        },
+    },
+    500: {
+        "description": "Mismatched sizes of dates and values error",
+        "content": {
+            "application/json": {
+                "example": {
+                    "detail": "Mismatched sizes of dates and values error"
                 },
             },
         },
@@ -138,37 +171,41 @@ get_all_calculations_description = """
     Returns:
     - all calculations in format:
         {
+            "timestamp": [
+                int value,
+                ...
+            ],
             "cost": [
                 float value,
-                float value
+                ...
             ],
             "open": [
                 float value,
-                float value
+                ...
             ],
             "close": [
                 float value,
-                float value
+                ...
             ],
             "min": [
                 float value,
-                float value
+                ...
             ],
             "max": [
                 float value,
-                float value
+                ...
             ],
             "integral_sum": [
                 float value,
-                float value
+                ...
             ],
             "percentage_changes": [
                 float value,
-                float value
+                ...
             ],
             "days_to_target_reduction": [
                 int value,
-                int value
+                ...
             ]
         }
 """
@@ -191,6 +228,17 @@ get_all_calculations_response = {
             "application/json": {
                 "example": {
                     "detail1": "Ticker NNNN not found in database",
+                    "detail2": "Data not found for this time: from 2025-01-12 to 2025-10-25"
+                },
+            },
+        },
+    },
+    500: {
+        "description": "Mismatched sizes of dates and values error",
+        "content": {
+            "application/json": {
+                "example": {
+                    "detail": "Mismatched sizes of dates and values error"
                 },
             },
         },
