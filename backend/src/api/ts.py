@@ -1,3 +1,4 @@
+import redis
 from fastapi import APIRouter, HTTPException
 
 from core.redis_config import RedisTimeseriesPrefix
@@ -5,18 +6,16 @@ from db.redis.redis_ts_api import ts_api
 from docs.ts import (
     add_one_point_route_description,
     add_points_route_description,
+    check_existing_ts_route_description,
     delete_range_route_description,
     delete_ts_route_description,
     get_last_point_route_description,
-    get_range_route_description,
-    get_range_route_responses,
-    check_existing_ts_route_description
+    get_range_route_description, get_range_route_responses,
 )
-
-from service.converters.time_converter import iso_to_timestamp
+from exceptions import MismatchSizeError, moex
+from exceptions.ts import check_ts_exists
 from service import moex as moex_service
-from exceptions import moex, MismatchSizeError
-import redis
+from service.converters.time_converter import iso_to_timestamp
 
 router = APIRouter(
     prefix="/ts",
@@ -85,6 +84,7 @@ async def get_last_point_route(
     name: str,
     prefix: RedisTimeseriesPrefix,
 ) -> tuple[int, float]:
+    check_ts_exists(name, prefix)
     return ts_api.get_last_point(
         name=name,
         prefix=prefix.value

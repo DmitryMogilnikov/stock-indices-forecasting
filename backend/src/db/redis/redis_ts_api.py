@@ -1,7 +1,7 @@
 from pydantic import validate_call
 from redis import Redis
 
-from core.redis_config import redis_ts_prefixes, redis_config
+from core.redis_config import redis_config, redis_ts_prefixes
 from db.redis.redis_db import RedisDatabase
 from db.redis.redis_name_manager import redis_name_manager
 

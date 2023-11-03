@@ -1,11 +1,13 @@
-import requests
-import apimoex
-import pandas as pd
-import numpy as np
-from service.converters import time_converter
-from exceptions import MismatchSizeError, moex
 from datetime import timedelta
+
+import apimoex
+import numpy as np
+import pandas as pd
+import requests
+
 from db.redis.redis_ts_api import RedisTimeseriesAPI, redis_config
+from exceptions import MismatchSizeError, moex
+from service.converters import time_converter
 
 
 def define_time_range_with_minimum_duration(
