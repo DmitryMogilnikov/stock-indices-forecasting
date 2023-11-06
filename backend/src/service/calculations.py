@@ -9,15 +9,16 @@ class CalculationIndex:
         self,
         index_name: str,
         prefix: str,
-        start_date: str,
-        end_date: str,
+        start: int,
+        end: int,
         reduction: float | None = None,
         tolerance: float | None = None
     ) -> None:
-        self.ts = ts_api.get_range(name=index_name, start=start_date, end=end_date, prefix=prefix)
+        self.ts = ts_api.get_range(name=index_name, start=start, end=end, prefix=prefix)
         self.dates = ts_to_dates(self.ts)
         self.reduction = reduction
         self.tolerance = tolerance
+        self.index_name = index_name
 
     def calc_integral_sum(self) -> None:
         self.integral_sum = np.cumsum(ts_to_values(ts=self.ts))
@@ -38,4 +39,5 @@ class CalculationIndex:
             count_days = mask[0]
             percentage = percentage[count_days:]
             i += count_days
-            self.days_to_reduction[i] = count_days
+            if i < self.days_to_reduction.shape[0]:
+                self.days_to_reduction[i] = count_days

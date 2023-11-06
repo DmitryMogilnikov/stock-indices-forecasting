@@ -171,42 +171,18 @@ get_all_calculations_description = """
     Returns:
     - all calculations in format:
         {
-            "timestamp": [
-                int value,
-                ...
+            [
+                int value (timestamp),
+                float value (cost),
+                float value (open),
+                float value (close),
+                float value (min),
+                float value (max),
+                float value (integral_sum),
+                float value (percentage_change),
+                int value (days_to_target_reduction)
             ],
-            "cost": [
-                float value,
-                ...
-            ],
-            "open": [
-                float value,
-                ...
-            ],
-            "close": [
-                float value,
-                ...
-            ],
-            "min": [
-                float value,
-                ...
-            ],
-            "max": [
-                float value,
-                ...
-            ],
-            "integral_sum": [
-                float value,
-                ...
-            ],
-            "percentage_changes": [
-                float value,
-                ...
-            ],
-            "days_to_target_reduction": [
-                int value,
-                ...
-            ]
+            ...
         }
 """
 

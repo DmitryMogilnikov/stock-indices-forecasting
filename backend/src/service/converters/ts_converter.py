@@ -12,5 +12,4 @@ def ts_to_values(ts: list[float]) -> np.ndarray[float]:
 
 
 def merge_dates_and_values(dates: list[int], *values: list[float])-> list[tuple[int, float]]:
-    print(values)
     return np.column_stack([dates, *values]).tolist()

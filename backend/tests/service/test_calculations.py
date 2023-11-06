@@ -1,73 +1,53 @@
 import pytest as pytest
 import numpy as np
 
-
 from backend.src.service import calculations
 
 
-@pytest.mark.parametrize(
-    'initial_percent, percent_value, target_reduction, expected_result',
-    [(4.59, 3.41, 1.0, True),
-     (4.59,3.82,1.0, False),
-     (3.82,4.59,1.0, False)
-     ]
-)
-def test_is_reduction_sufficient(initial_percent, percent_value, target_reduction, expected_result):
-    assert np.array_equal(calculations.is_reduction_sufficient(initial_percent, percent_value, target_reduction), expected_result)
+def mock_get_range(name, start, end, prefix):
+    if name == "test_index_1":
+        return np.array([[1, 5], [2, 4], [3, 3], [4, 2], [5, 1]])
+    if name == "test_index_2":
+        return np.array([[1, 0.5], [2, 0.3], [3, 0.15], [4, 0.1], [5, 0.05]])
+    
+
+@pytest.fixture
+def calculation_index_instance(request):
+    name = request.param
+    calculations.ts_api.get_range = lambda name, start, end, prefix: mock_get_range(name, start, end, prefix)
+    return calculations.CalculationIndex(index_name=name, prefix="test_prefix", start=0, end=5)
 
 
-@pytest.mark.parametrize(
-    'percentage_changes, initial_percent, target_reduction, expected_result',
-    [([], 4.60, 0.6, 0),
-     ([4.59, 4.21, 3.89, 2.47], 4.60, 0.6, 3),
-     ([4.59, 4.21, 3.89, 2.47], 4.60, 1.0, 4),
-     ([4.59, 4.21, 3.89, 2.47], 4.60, 5.0, 0)
-     ]
-)
-def test_get_days_to_reduce_procent(percentage_changes, initial_percent, target_reduction, expected_result):
-    assert np.array_equal(calculations.get_days_to_reduce_procent(percentage_changes, initial_percent, target_reduction), expected_result)
+@pytest.mark.parametrize("calculation_index_instance", ["test_index_1", "test_index_2"], indirect=True)
+def test_calc_integral_sum(calculation_index_instance):
+    calculation_index_instance.calc_integral_sum()
+    assert np.allclose(calculation_index_instance.integral_sum, np.array([5, 9, 12, 14, 15])) \
+        if calculation_index_instance.index_name == "test_index_1" \
+        else np.allclose(calculation_index_instance.integral_sum, np.array([0.5, 0.8, 0.95, 1.05, 1.1]))
 
 
-@pytest.mark.parametrize(
-    'percentage_changes, target_reduction, expected_result',
-    [([], 0.6, []),
-     ([4.59, 4.21, 3.89, 2.47], 0.6, [2, 2, 1, 0]),
-     ([4.59, 4.21, 3.89, 2.47], 5.0, [0, 0, 0, 0]),
-     ([4.59, 4.21, 3.89, 2.47], 0.1, [1, 1, 1, 0]),
-     ([4.59, 4.21, 3.89, 2.47], 2.1, [3, 0, 0, 0])
-     ]
-)
-def test_calculate_days_to_target_reductions(percentage_changes, target_reduction, expected_result):
-    assert np.array_equal(calculations.calculate_days_to_target_reduction(percentage_changes, target_reduction), expected_result)
+@pytest.mark.parametrize("calculation_index_instance", ["test_index_1", "test_index_2"], indirect=True)
+def test_calc_increase_percentage(calculation_index_instance):
+    calculation_index_instance.calc_integral_sum()
+    calculation_index_instance.calc_increase_percentage()
+    print(calculation_index_instance.increase_percentage)
+    assert np.allclose(calculation_index_instance.increase_percentage, np.array([0.0, 80.0, 33.33333333, 16.66666667, 7.14285714])) \
+        if calculation_index_instance.index_name == "test_index_1" \
+        else np.allclose(calculation_index_instance.increase_percentage, np.array([0.0, 60.0, 18.75, 10.52631579, 4.76190476]))
 
 
-@pytest.mark.parametrize(
-    'data, expected_result',
-    [([], []),
-     ([120.8, 136.1, 178.1], np.array([120.8, 256.9, 435.0])),
-     ([54.3, 49.6, 61.5], np.array([54.3, 103.9, 165.4]))
-     ]
-)
-def test_calc_integral_sum(data, expected_result):
-    assert np.array_equal(calculations.calc_integral_sum(data), expected_result)
+@pytest.mark.parametrize("calculation_index_instance", ["test_index_1", "test_index_2"], indirect=True)
+def test_calc_increase_percentage(calculation_index_instance):
+    if calculation_index_instance.index_name == "test_index_1":
+        calculation_index_instance.reduction = 11
+        calculation_index_instance.tolerance = 1e-6
+    else:
+        calculation_index_instance.reduction = 50
+        calculation_index_instance.tolerance = 1e-6
 
-
-@pytest.mark.parametrize(
-    'data, expected_result',
-    [([], []),
-     ([20.0, 40.0, 50.0], [0.0, 100.0, 25.0]),
-     ([128.0, 136.0, 255.0], [0.0, 6.25, 87.5])
-     ]
-)
-def test_calc_increase_percentage(data, expected_result):
-    assert np.array_equal(calculations.calc_increase_percentage(data), expected_result)
-
-
-@pytest.mark.parametrize(
-    'timestamps, values, expected_result',
-    [([], [], []),
-     ([1, 2, 3], [1.0, 2.0, 3.0], [(1, 1.0), (2, 2.0), (3, 3.0)])
-     ]
-)
-def test_get_values_with_timestamps(timestamps, values, expected_result):
-    assert np.array_equal(calculations.get_values_with_timestamps(timestamps, values), expected_result)
+    calculation_index_instance.calc_integral_sum()
+    calculation_index_instance.calc_increase_percentage()
+    calculation_index_instance.calc_days_to_target_reduction()
+    assert np.allclose(calculation_index_instance.days_to_reduction, np.array([0.0, 0.0, 1.0, 1.0, 0.0])) \
+        if calculation_index_instance.index_name == "test_index_1" \
+        else np.allclose(calculation_index_instance.days_to_reduction, np.array([0.0, 0.0, 0.0, 0.0, 3.0]))
