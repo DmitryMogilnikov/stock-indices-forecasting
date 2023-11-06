@@ -15,14 +15,14 @@ class CalculationIndex:
         tolerance: float | None = None
     ) -> None:
         self.ts = ts_api.get_range(name=index_name, start=start, end=end, prefix=prefix)
-        self.dates = ts_to_dates(self.ts) if len(self.ts) > 0 else np.array([])
+        self.dates = ts_to_dates(self.ts)
 
         self.reduction = reduction
         self.tolerance = tolerance
         self.index_name = index_name
 
     def calc_integral_sum(self) -> None:
-        self.integral_sum = np.cumsum(ts_to_values(ts=self.ts)) if len(self.ts) > 1 else np.array([])
+        self.integral_sum = np.cumsum(ts_to_values(ts=self.ts))
     
     def calc_increase_percentage(self) -> None:
         self.increase_percentage = np.zeros(self.integral_sum.shape)
