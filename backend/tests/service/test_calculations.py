@@ -9,7 +9,7 @@ def mock_get_range(name, start, end, prefix):
         return np.array([[1, 5], [2, 4], [3, 3], [4, 2], [5, 1]])
     if name == "test_index_2":
         return np.array([[1, 0.5], [2, 0.3], [3, 0.15], [4, 0.1], [5, 0.05]])
-    
+
 
 @pytest.fixture
 def calculation_index_instance(request):
@@ -30,7 +30,6 @@ def test_calc_integral_sum(calculation_index_instance):
 def test_calc_increase_percentage(calculation_index_instance):
     calculation_index_instance.calc_integral_sum()
     calculation_index_instance.calc_increase_percentage()
-    print(calculation_index_instance.increase_percentage)
     assert np.allclose(calculation_index_instance.increase_percentage, np.array([0.0, 80.0, 33.33333333, 16.66666667, 7.14285714])) \
         if calculation_index_instance.index_name == "test_index_1" \
         else np.allclose(calculation_index_instance.increase_percentage, np.array([0.0, 60.0, 18.75, 10.52631579, 4.76190476]))
