@@ -6,9 +6,9 @@
   height: 55px;
   margin: 0 auto;
   padding: 0;
-  top: 0px;
-  left: 0px;
-  right: 0px;
+  left: 0;
+  top: 0;
+  right: 0;
   position: absolute;
   flex-flow: row wrap;
   box-shadow: 0 0 0 2px rgb(0,0,0);
@@ -24,13 +24,4 @@
     align-items: center;
     justify-content: center;
   }
-}
-
-.NoSelect {
-    -webkit-touch-callout: none; 
-      -webkit-user-select: none; 
-       -khtml-user-select: none; 
-         -moz-user-select: none; 
-          -ms-user-select: none;
-              user-select: none;
 }

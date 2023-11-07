@@ -5,6 +5,7 @@ function Main_DataTable() {
     return (
         <div className="Main_DataTable">
             <table id="dataTable" name="dataTable" className="dataTable">
+                <caption name="captionDataTable">Сформированные данные</caption>
                 <tr>
                     <th>Дата</th>
                     <th>Цена</th>
