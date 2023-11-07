@@ -1,11 +1,12 @@
 from fastapi import APIRouter, HTTPException
 
-from service import moex as moex_service
-from exceptions import MismatchSizeError, moex
+from db.redis.redis_ts_api import ts_api
 from docs.moex import (
     add_data_by_ticker_description,
-    add_data_by_ticker_responses)
-from db.redis.redis_ts_api import ts_api
+    add_data_by_ticker_responses,
+)
+from exceptions import MismatchSizeError, moex
+from service import moex as moex_service
 
 router = APIRouter(
     prefix="/moex",

@@ -1,11 +1,13 @@
-import requests
-import apimoex
-import pandas as pd
-import numpy as np
-from service.converters import time_converter
-from exceptions import MismatchSizeError, moex
 from datetime import timedelta
+
+import apimoex
+import numpy as np
+import pandas as pd
+import requests
+
 from db.redis.redis_ts_api import RedisTimeseriesAPI, redis_config
+from exceptions import MismatchSizeError, moex
+from service.converters import time_converter
 
 
 def define_time_range_with_minimum_duration(
@@ -28,7 +30,7 @@ def define_time_range_with_minimum_duration(
     return (time_converter.iso_to_str(start), time_converter.iso_to_str(end))
 
 
-def get_values_with_timestamps(
+def get_values_with_dates(
     dates: list[str],
     values: list[float]
 ) -> list[tuple[int, float]]:
@@ -140,10 +142,10 @@ def get_historical_information(ticker, start_date, end_date):
 
 
 def add_data_by_ticker(
-        ts_api: RedisTimeseriesAPI,
-        ticker: str,
-        start: str,
-        end: str
+    ts_api: RedisTimeseriesAPI,
+    ticker: str,
+    start: str,
+    end: str
 ) -> None:
     start, end = define_time_range_with_minimum_duration(
         start,
@@ -151,23 +153,23 @@ def add_data_by_ticker(
     )
 
     df = get_historical_information(ticker, start, end)
-    costs_with_timestamps = get_values_with_timestamps(
+    costs_with_timestamps = get_values_with_dates(
         df['TRADEDATE'],
         df['MARKETPRICE2']
     )
-    opens_with_timestamps = get_values_with_timestamps(
+    opens_with_timestamps = get_values_with_dates(
         df['TRADEDATE'],
         df['OPEN']
     )
-    closes_with_timestamps = get_values_with_timestamps(
+    closes_with_timestamps = get_values_with_dates(
         df['TRADEDATE'],
         df['CLOSE']
     )
-    maxs_with_timestamps = get_values_with_timestamps(
+    maxs_with_timestamps = get_values_with_dates(
         df['TRADEDATE'],
         df['HIGH']
     )
-    mins_with_timestamps = get_values_with_timestamps(
+    mins_with_timestamps = get_values_with_dates(
         df['TRADEDATE'],
         df['LOW']
     )

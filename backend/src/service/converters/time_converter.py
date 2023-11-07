@@ -1,6 +1,8 @@
 from datetime import datetime
-from exceptions import moex
+
 import pytz
+
+from exceptions import moex
 
 
 def str_to_iso(date: str) -> datetime:

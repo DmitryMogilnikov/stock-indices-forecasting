@@ -1,5 +1,4 @@
-from typing import Literal
-
+import redis
 from fastapi import APIRouter, HTTPException
 
 from core.redis_config import RedisTimeseriesPrefix
@@ -7,17 +6,16 @@ from db.redis.redis_ts_api import ts_api
 from docs.ts import (
     add_one_point_route_description,
     add_points_route_description,
+    check_existing_ts_route_description,
     delete_range_route_description,
     delete_ts_route_description,
     get_last_point_route_description,
-    get_range_route_description,
-    check_existing_ts_route_description,
+    get_range_route_description, get_range_route_responses,
 )
-
-from service.converters.time_converter import iso_to_timestamp
+from exceptions import MismatchSizeError, moex
+from exceptions.ts import check_ts_exists
 from service import moex as moex_service
-from exceptions import moex, MismatchSizeError
-import redis
+from service.converters.time_converter import iso_to_timestamp
 
 router = APIRouter(
     prefix="/ts",
@@ -86,6 +84,7 @@ async def get_last_point_route(
     name: str,
     prefix: RedisTimeseriesPrefix,
 ) -> tuple[int, float]:
+    check_ts_exists(name, prefix)
     return ts_api.get_last_point(
         name=name,
         prefix=prefix.value
@@ -129,8 +128,11 @@ async def get_range_route(
     except redis.ResponseError:
         is_key_exist = False
 
-    if start_date == "-" or end_date == "+" or (is_key_exist and len(ts_range) != 0):
+    if is_key_exist and len(ts_range) != 0:
         return ts_range
+    
+    if start_date == "-" or end_date == "+":
+        return []
 
     try:
         moex_service.add_data_by_ticker(ts_api, name, start_date, end_date)

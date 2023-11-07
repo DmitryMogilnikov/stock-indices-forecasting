@@ -39,10 +39,10 @@ def test_define_time_range_with_minimum_duration():
     )
 
 
-def test_get_values_with_timestamps():
+def test_get_values_with_dates():
     # Case with invalid date format
     with pytest.raises(Exception) as err:
-        moex.get_values_with_timestamps(
+        moex.get_values_with_dates(
             ["2023:01?01", "2023-01-02"],
             [0.5, 0.4]
         )
@@ -50,12 +50,12 @@ def test_get_values_with_timestamps():
 
     # Case where len(dates) != len(values)
     with pytest.raises(Exception) as err:
-        moex.get_values_with_timestamps(["2023-01-01", "2023-01-02"], [0.5])
+        moex.get_values_with_dates(["2023-01-01", "2023-01-02"], [0.5])
     assert str(err.value) == "Mismatched sizes of dates and values error"
 
     # Correct case
     unittest.TestCase().assertListEqual(
-        list1=moex.get_values_with_timestamps(
+        list1=moex.get_values_with_dates(
             ["2023-01-01", "2023-01-02"],
             [0.5, 0.4]
         ),
@@ -66,4 +66,4 @@ def test_get_values_with_timestamps():
     )
 
     # Case with empty lists
-    assert moex.get_values_with_timestamps([], []) == []
+    assert moex.get_values_with_dates([], []) == []
