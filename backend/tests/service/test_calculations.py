@@ -36,7 +36,7 @@ def test_calc_increase_percentage(calculation_index_instance):
 
 
 @pytest.mark.parametrize("calculation_index_instance", ["test_index_1", "test_index_2"], indirect=True)
-def test_calc_increase_percentage(calculation_index_instance):
+def test_calc_days_to_target_reduction(calculation_index_instance):
     if calculation_index_instance.index_name == "test_index_1":
         calculation_index_instance.reduction = 11
         calculation_index_instance.tolerance = 1e-6
