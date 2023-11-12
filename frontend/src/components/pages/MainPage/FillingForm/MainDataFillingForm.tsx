@@ -1,10 +1,26 @@
 import React from "react";
-import "./../styles/Main_DataFillingForm.model.scss";
+import "./../../../../styles/MainDataFillingForm.model.scss";
 
-function Main_DataFillingForm() {
+
+type Props = {
+    getData: (
+        index_name: string,
+        start_date: string,
+        end_date: string,
+        reduction: string,
+        tolerance?: string,
+        prefix?: string
+    ) => void;
+}
+
+function MainDataFillingForm(props: Props) {
     return (
         <div className="Main_DataFillingForm">
-            <form id="dataOutputSettings" name="dataOutputSettings" className="dataFillingForm">
+            <form id="dataOutputSettings" name="dataOutputSettings" className="dataFillingForm" onSubmit={(e) => {e.preventDefault();
+                    props.getData((document.getElementById("indexCode") as HTMLInputElement)!.value!,
+                    (document.getElementById("startDate") as HTMLInputElement)!.value!,
+                    (document.getElementById("endDate") as HTMLInputElement)!.value!,
+                    (document.getElementById("percentage") as HTMLInputElement)!.value!)}}>
                 <div>
                     <label htmlFor="indexCode">Код индекса</label>
                 </div>
@@ -33,4 +49,4 @@ function Main_DataFillingForm() {
     )
 }
 
-export default Main_DataFillingForm
+export default MainDataFillingForm
