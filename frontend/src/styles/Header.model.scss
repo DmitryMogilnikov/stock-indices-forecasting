@@ -1,0 +1,27 @@
+@import "./variables.scss";
+
+.Header {
+  background-color: rgb(65,136,210);
+  width: 100%;
+  height: 55px;
+  margin: 0 auto;
+  padding: 0;
+  left: 0;
+  top: 0;
+  right: 0;
+  position: absolute;
+  flex-flow: row wrap;
+  box-shadow: 0 0 0 2px rgb(0,0,0);
+
+  &__content {
+    overflow: hidden;
+    color: rgb(255,255,255);
+    font-size: 14px;
+    font-family: $fontFamily_Poppins;
+    margin: 0 auto;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}

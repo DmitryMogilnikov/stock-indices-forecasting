@@ -1,0 +1,38 @@
+@import "./variables.scss";
+
+.Main_DataTable {
+    width: 100%;
+    margin: 0 auto;
+    margin-top: 317px;
+    padding: 0;
+    padding-bottom: 35px;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    position: absolute;
+    flex-flow: row wrap;
+    text-align: center;
+}
+
+.dataTable {
+    background-color: rgb(217,217,217);
+    width: 100%;
+    border-collapse: collapse;
+    border: .5px solid rgb(0, 0, 0);
+    empty-cells: hide;
+    font-family: $fontFamily_Poppins;
+    color: rgb(0, 0, 0);
+}
+caption {
+    background-color: rgb(217,217,217);
+}
+th, td {
+    border: .5px solid rgb(0, 0, 0)
+}
+th {
+    padding: 5px;
+}
+td {
+    padding: 3px;
+}
