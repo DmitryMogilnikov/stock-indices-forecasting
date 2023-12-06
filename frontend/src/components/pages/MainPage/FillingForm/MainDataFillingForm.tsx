@@ -42,7 +42,12 @@ function MainDataFillingForm(props: Props) {
                     <input id="percentage" name="percentage" type="text" className="form-inpute-value"></input>
                 </div>
                 <div>
-                    <button id="calculate" name="сalculate" className="form-button-accept">Рассчитать</button>
+                    <div>
+                        <button id="calculate" name="сalculate" className="form-button-accept">Рассчитать</button>
+                    </div>
+                    <div>
+                        <button id="download" name="download" className="form-button-download">Скачать</button>
+                    </div>
                 </div>
             </form>
         </div>
