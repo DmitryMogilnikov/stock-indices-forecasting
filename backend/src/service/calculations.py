@@ -30,7 +30,7 @@ class CalculationIndex:
 
     def calc_integral_sum(self) -> None:
         self.integral_sum = np.cumsum(ts_to_values(ts=self.ts))
-    
+
     def calc_increase_percentage(self) -> None:
         self.increase_percentage = np.zeros(self.integral_sum.shape)
         if self.increase_percentage.shape[0] > 1:
@@ -77,7 +77,6 @@ def get_all_calculations(
         tolerance=tolerance,
     )
 
-    cost = ts_to_values(ts_api.get_range(index_name, RedisTimeseriesPrefix.cost.value, start, end))
     open = ts_to_values(ts_api.get_range(index_name, RedisTimeseriesPrefix.open.value, start, end))
     close = ts_to_values(ts_api.get_range(index_name, RedisTimeseriesPrefix.close.value, start, end))
     min = ts_to_values(ts_api.get_range(index_name, RedisTimeseriesPrefix.min.value, start, end))
@@ -89,7 +88,6 @@ def get_all_calculations(
 
     return merge_dates_and_values(
         calculation_index.dates,
-        cost,
         open,
         close,
         min,

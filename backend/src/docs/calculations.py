@@ -158,7 +158,7 @@ get_increase_percentage_response = {
 }
 
 get_all_calculations_description = """
-    Route to get all calculations (cost, open, close, min, max, integral sum, percentage changes, days to target reduction) for a given time interval.
+    Route to get all calculations (open, close, min, max, integral sum, percentage changes, days to target reduction) for a given time interval.
 
     - name: name of timeseries
     - start: date in iso format (2023-01-01).
@@ -173,7 +173,6 @@ get_all_calculations_description = """
         {
             [
                 int value (timestamp),
-                float value (cost),
                 float value (open),
                 float value (close),
                 float value (min),

@@ -186,7 +186,7 @@ async def delete_range_route(
 )
 async def delete_ts_route(
     name: str,
-    prefix: RedisTimeseriesPrefix = RedisTimeseriesPrefix.cost,
+    prefix: RedisTimeseriesPrefix = RedisTimeseriesPrefix.close,
 ) -> None:
     ts_api.delete_ts(
         name=name,

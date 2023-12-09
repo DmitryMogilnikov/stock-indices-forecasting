@@ -93,7 +93,6 @@ def get_board_history(
                 'CLOSE',
                 'HIGH',
                 'LOW',
-                'MARKETPRICE2'
             ),
             board=board, market=market, engine=engine
         )
@@ -105,7 +104,7 @@ def filter_and_reset_dataframe(df):
     df = df.dropna()
     return df.reset_index(drop=True)
 
-
+    
 def get_historical_information(ticker, start_date, end_date):
     """Get historical ticker's data by API request from moex.com."""
     with requests.Session() as session:
@@ -153,10 +152,6 @@ def add_data_by_ticker(
     )
 
     df = get_historical_information(ticker, start, end)
-    costs_with_timestamps = get_values_with_dates(
-        df['TRADEDATE'],
-        df['CLOSE']
-    )
     opens_with_timestamps = get_values_with_dates(
         df['TRADEDATE'],
         df['OPEN']
@@ -174,11 +169,6 @@ def add_data_by_ticker(
         df['LOW']
     )
 
-    ts_api.add_points(
-        ticker,
-        redis_config.redis_cost_key,
-        costs_with_timestamps
-    )
     ts_api.add_points(
         ticker,
         redis_config.redis_open_key,
