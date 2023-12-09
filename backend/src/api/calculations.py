@@ -1,6 +1,4 @@
 import io
-import os
-from pathlib import Path
 
 import pandas as pd
 from api.moex import add_data_by_ticker_route
@@ -158,10 +156,6 @@ async def get_excel_with_all_calculations_route(
     reduction: float = 1.0,
     tolerance: float = 0.05,
 ):
-    path = f"{Path(__file__).parents[3]}\data"
-    if not os.path.exists(path):
-        os.makedirs(f"{path}")
-    
     header_list = [
         "date", "cost", "open", "close", "min", "max", "integral_sum", "increase_percentage", "days_to_reduction",
     ]
