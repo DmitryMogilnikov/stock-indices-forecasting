@@ -155,7 +155,7 @@ def add_data_by_ticker(
     df = get_historical_information(ticker, start, end)
     costs_with_timestamps = get_values_with_dates(
         df['TRADEDATE'],
-        df['MARKETPRICE2']
+        df['CLOSE']
     )
     opens_with_timestamps = get_values_with_dates(
         df['TRADEDATE'],
