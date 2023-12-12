@@ -21,6 +21,25 @@ function getAllData(
     };
 }
 
+function getExcelData(
+    index_name: string,
+    start_date: string,
+    end_date: string,
+    reduction: string,
+    tolerance?: string,
+    prefix?: string,
+): Action {
+    return {
+        type: ACTIONS.GET_EXCEL_DATA,
+        index_name: index_name,
+        start_date: start_date,
+        end_date: end_date,
+        reduction: reduction,
+        tolerance: tolerance ? tolerance : "0.05",
+        prefix: prefix ? prefix : "CLOSE"
+    };
+}
+
 function setAllData(
     data: any[],
 ): Action {
@@ -33,7 +52,8 @@ function setAllData(
 
 const mainPageAC = {
     getAllData: getAllData,
-    setAllData: setAllData
+    setAllData: setAllData,
+    getExcelData: getExcelData
 };
 
 export default mainPageAC;

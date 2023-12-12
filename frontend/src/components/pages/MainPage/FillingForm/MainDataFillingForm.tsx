@@ -11,6 +11,14 @@ type Props = {
         tolerance?: string,
         prefix?: string
     ) => void;
+    getExcelData: (
+        index_name: string,
+        start_date: string,
+        end_date: string,
+        reduction: string,
+        tolerance?: string,
+        prefix?: string
+    ) => void;
 }
 
 function MainDataFillingForm(props: Props) {
@@ -46,7 +54,11 @@ function MainDataFillingForm(props: Props) {
                         <button id="calculate" name="сalculate" className="form-button-accept">Рассчитать</button>
                     </div>
                     <div>
-                        <button id="download" name="download" className="form-button-download">Скачать</button>
+                        <button id="download" name="download" className="form-button-download" onClick={(e) => {e.preventDefault();
+                        props.getExcelData((document.getElementById("indexCode") as HTMLInputElement)!.value!,
+                        (document.getElementById("startDate") as HTMLInputElement)!.value!,
+                        (document.getElementById("endDate") as HTMLInputElement)!.value!,
+                        (document.getElementById("percentage") as HTMLInputElement)!.value!)}}>Скачать</button>
                     </div>
                 </div>
             </form>
