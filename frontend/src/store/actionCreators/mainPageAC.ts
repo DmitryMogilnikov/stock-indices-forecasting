@@ -17,7 +17,7 @@ function getAllData(
         end_date: end_date,
         reduction: reduction,
         tolerance: tolerance ? tolerance : "0.05",
-        prefix: prefix ? prefix : "COST"
+        prefix: prefix ? prefix : "CLOSE"
     };
 }
 

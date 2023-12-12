@@ -160,7 +160,7 @@ async def get_excel_with_all_calculations_route(
     await add_data_by_ticker_route(name=index_name, start=start_date, end=end_date)
 
     header_list = [
-        "date", "cost", "open", "close", "min", "max", "integral_sum", "increase_percentage", "days_to_reduction",
+        "date", "open", "close", "min", "max", "integral_sum", "increase_percentage", "days_to_reduction",
     ]
     df = get_all_calculations(index_name, prefix, start_date, end_date, reduction, tolerance)
     df = pd.DataFrame(df, columns=header_list)
