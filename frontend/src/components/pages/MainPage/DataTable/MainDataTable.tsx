@@ -25,13 +25,13 @@ const MainDataTable = (props: Props) => {
                 {props.data ? props.data.map((row) => (
                     <tr>
                         <th>{row[0]}</th>
-                        <th>{row[1]}</th>
                         <th>{row[2]}</th>
-                        <th>{row[5]}</th>
+                        <th>{row[1]}</th>
                         <th>{row[4]}</th>
+                        <th>{row[3]}</th>
+                        <th>{row[5].toFixed(2)}</th>
                         <th>{row[6].toFixed(2)}</th>
-                        <th>{row[7].toFixed(2)}</th>
-                        <th>{row[8]}</th>
+                        <th>{row[7]}</th>
                     </tr>
                 )) : <></>}
             </table>

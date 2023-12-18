@@ -23,6 +23,26 @@ function mapDispatchToProps(dispatch: (action: Action) => void) {
                     prefix
                 )
             );
+        },
+
+        getExcelData: (
+            index_name: string,
+            start_date: string,
+            end_date: string,
+            reduction: string,
+            tolerance?: string,
+            prefix?: string
+        ) => {
+            dispatch(
+                mainPageAC.getExcelData(
+                    index_name,
+                    start_date,
+                    end_date,
+                    reduction,
+                    tolerance,
+                    prefix
+                )
+            );
         }
     }
 }

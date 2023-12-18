@@ -1,6 +1,7 @@
 enum ACTIONS {
     GET_ALL_DATA = "GET_ALL_DATA",
-    SET_ALL_DATA = "SET_ALL_DATA"
+    SET_ALL_DATA = "SET_ALL_DATA",
+    GET_EXCEL_DATA = "GET_EXCEL_DATA"
 }
 
 export default ACTIONS

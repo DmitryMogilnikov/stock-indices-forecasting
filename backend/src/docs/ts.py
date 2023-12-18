@@ -3,7 +3,7 @@ add_one_point_route_description = """
 
     Args:
     - name: name of timeseries
-    - prefix: prefix for timeseries (COST, OPEN, CLOSE, MAX, MIN)
+    - prefix: prefix for timeseries (OPEN, CLOSE, MAX, MIN)
     - date: date in iso format (2023-01-01).
         Defaults is "*" - datetime now
     - value: timestamp value.
@@ -15,7 +15,7 @@ add_points_route_description = """
     Route for add points in Redis timeseries.
 
     - name: name of timeseries
-    - prefix: prefix for timeseries (COST, OPEN, CLOSE, MAX, MIN)
+    - prefix: prefix for timeseries (OPEN, CLOSE, MAX, MIN)
     - points: list of points (timestamp in milliseconds, value) in format:
         [
             [
@@ -35,7 +35,7 @@ check_existing_ts_route_description = """
     Route for check existing ts in Redis.
 
     - name: name of timeseries
-    - prefix: prefix for timeseries (COST, OPEN, CLOSE, MAX, MIN)
+    - prefix: prefix for timeseries (OPEN, CLOSE, MAX, MIN)
 
     Returns:
     - bool
@@ -45,7 +45,7 @@ get_last_point_route_description = """
     Route for get last point from Redis timeseries.
 
     - name: name of timeseries
-    - prefix: prefix for timeseries (COST, OPEN, CLOSE, MAX, MIN)
+    - prefix: prefix for timeseries (OPEN, CLOSE, MAX, MIN)
 
     Returns:
     - point in format:
@@ -59,7 +59,7 @@ get_range_route_description = """
     Route for get range of points from Redis timeseries.
 
     - name: name of timeseries
-    - prefix: prefix for timeseries (COST, OPEN, CLOSE, MAX, MIN)
+    - prefix: prefix for timeseries (OPEN, CLOSE, MAX, MIN)
     - start: date in iso format (2023-01-01).
         Defaults is "-" - min date in timeseries
     - end: date in iso format (2023-01-01).
@@ -120,7 +120,7 @@ delete_range_route_description = """
     Route for delete range of points from Redis timeseries.
 
     - name: name of timeseries
-    - prefix: prefix for timeseries (COST, OPEN, CLOSE, MAX, MIN)
+    - prefix: prefix for timeseries (OPEN, CLOSE, MAX, MIN)
     - start: date in iso format (2023-01-01).
         Defaults is "-" - min date in timeseries
     - end: date in iso format (2023-01-01).
@@ -134,7 +134,7 @@ delete_ts_route_description = """
     Route for delete range of points from Redis timeseries.
 
     - name: name of timeseries
-    - prefix: prefix for timeseries (COST, OPEN, CLOSE, MAX, MIN)
+    - prefix: prefix for timeseries (OPEN, CLOSE, MAX, MIN)
 
     Returns: None
 """

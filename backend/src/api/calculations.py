@@ -1,9 +1,8 @@
-from fastapi import APIRouter, HTTPException
+import io
 
+import pandas as pd
 from api.moex import add_data_by_ticker_route
 from core.redis_config import RedisTimeseriesPrefix
-from db.redis.redis_ts_api import ts_api
-from exceptions.moex import InvalidDateFormat
 from docs.calculations import (
     get_all_calculations_description,
     get_all_calculations_response,
@@ -12,14 +11,17 @@ from docs.calculations import (
     get_increase_percentage_description,
     get_increase_percentage_response,
     get_integral_sums_description,
-    get_integral_sums_response
+    get_integral_sums_response,
 )
-from service.calculations import CalculationIndex
-from service.converters.time_converter import iso_to_timestamp
-from service.converters.ts_converter import (
-    merge_dates_and_values,
-    ts_to_values,
+from exceptions.moex import InvalidDateFormat
+from fastapi import APIRouter, HTTPException
+from fastapi.responses import StreamingResponse
+from service.calculations import CalculationIndex, get_all_calculations
+from service.converters.time_converter import (
+    iso_to_timestamp,
+    timestamp_to_iso,
 )
+from service.converters.ts_converter import merge_dates_and_values
 
 router = APIRouter(
     prefix="/calculations",
@@ -138,41 +140,38 @@ async def get_all_calculations_route(
     reduction: float = 1.0,
     tolerance: float = 0.05,
 ):
-    try:
-        start = iso_to_timestamp(start_date)
-        end = iso_to_timestamp(end_date)
-    except InvalidDateFormat as err:
-        raise HTTPException(status_code=400, detail=str(err))
+    await add_data_by_ticker_route(name=index_name, start=start_date, end=end_date)
+    return get_all_calculations(index_name, prefix, start_date, end_date, reduction, tolerance)
 
+@router.get(
+    path="/get_excel_with_all_calculations",
+    name="Get excel with all calculations",
+    description=get_all_calculations_description,
+    responses=get_all_calculations_response,
+)
+async def get_excel_with_all_calculations_route(
+    index_name: str,
+    prefix: RedisTimeseriesPrefix,
+    start_date: str = "2020-01-01",
+    end_date: str = "2023-11-03",
+    reduction: float = 1.0,
+    tolerance: float = 0.05,
+):
     await add_data_by_ticker_route(name=index_name, start=start_date, end=end_date)
 
-    calculation_index = CalculationIndex(
-        index_name=index_name,
-        prefix=prefix.value,
-        start=start,
-        end=end,
-        reduction=reduction,
-        tolerance=tolerance,
-    )
+    header_list = [
+        "date", "open", "close", "min", "max", "integral_sum", "increase_percentage", "days_to_reduction",
+    ]
+    df = get_all_calculations(index_name, prefix, start_date, end_date, reduction, tolerance)
+    df = pd.DataFrame(df, columns=header_list)
+    df["date"] = df["date"].apply(lambda x: timestamp_to_iso(x))
 
-    cost = ts_to_values(ts_api.get_range(index_name, RedisTimeseriesPrefix.cost.value, start, end))
-    open = ts_to_values(ts_api.get_range(index_name, RedisTimeseriesPrefix.open.value, start, end))
-    close = ts_to_values(ts_api.get_range(index_name, RedisTimeseriesPrefix.close.value, start, end))
-    min = ts_to_values(ts_api.get_range(index_name, RedisTimeseriesPrefix.min.value, start, end))
-    max = ts_to_values(ts_api.get_range(index_name, RedisTimeseriesPrefix.max.value, start, end))
+    buffer = io.BytesIO()
+    with pd.ExcelWriter(buffer) as writer:
+        df.to_excel(writer, index=False)
 
-    calculation_index.calc_integral_sum()
-    calculation_index.calc_increase_percentage()
-    calculation_index.calc_days_to_target_reduction()
-
-    return merge_dates_and_values(
-        calculation_index.dates,
-        cost,
-        open,
-        close,
-        min,
-        max,
-        calculation_index.integral_sum,
-        calculation_index.increase_percentage,
-        calculation_index.days_to_reduction,
+    return StreamingResponse(
+        content=io.BytesIO(buffer.getvalue()),
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": f'attachment; filename="{index_name}.xlsx"'}
     )

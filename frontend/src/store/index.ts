@@ -7,8 +7,10 @@ import createSagaMiddleware from "redux-saga";
 
 import Action from "../types/Action";
 
-import watchGetAllData from "./sagas/getAllData";
 import main_table from "./reducers/main_page_reducer";
+
+import watchGetAllData from "./sagas/getAllData";
+import watchGetExcelData from "./sagas/getExcelData";
 
 const reducers = combineReducers({
     main_page_table: main_table
@@ -24,5 +26,6 @@ let store: Store<
     Action> = createStore(reducers, applyMiddleware(logger, saga));
 
 saga.run(watchGetAllData);
+saga.run(watchGetExcelData)
 
 export default store;

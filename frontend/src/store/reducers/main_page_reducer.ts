@@ -6,7 +6,8 @@ import initialstate from "../states/main_page_table"
 
 function convertTime(unixtime) {
     let date = new Date(unixtime)
-    return date.getDate() + "." + date.getMonth() +"." + date.getFullYear()
+    let month = date.getMonth() + 1
+    return date.getDate() + "." + month +"." + date.getFullYear()
     };
 
 function main_table(state: MainPageT = initialstate, action: Action): MainPageT {
