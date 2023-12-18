@@ -139,9 +139,10 @@ async def get_all_calculations_route(
     end_date: str = "2023-11-03",
     reduction: float = 1.0,
     tolerance: float = 0.05,
+    days_count: float = 5,
 ):
     await add_data_by_ticker_route(name=index_name, start=start_date, end=end_date)
-    return get_all_calculations(index_name, prefix, start_date, end_date, reduction, tolerance)
+    return get_all_calculations(index_name, prefix, start_date, end_date, reduction, tolerance, days_count)
 
 @router.get(
     path="/get_excel_with_all_calculations",
@@ -156,13 +157,17 @@ async def get_excel_with_all_calculations_route(
     end_date: str = "2023-11-03",
     reduction: float = 1.0,
     tolerance: float = 0.05,
+    days_count: float = 5,
 ):
     await add_data_by_ticker_route(name=index_name, start=start_date, end=end_date)
 
     header_list = [
-        "date", "open", "close", "min", "max", "integral_sum", "increase_percentage", "days_to_reduction",
+        "date", "open", "close", "min", "max", 
+        "integral_sum", "increase_percentage", "days_to_reduction",
+        "predict_increase_percentage", "predict_integral_sum", "predict_cost",
+        "error",
     ]
-    df = get_all_calculations(index_name, prefix, start_date, end_date, reduction, tolerance)
+    df = get_all_calculations(index_name, prefix, start_date, end_date, reduction, tolerance, days_count)
     df = pd.DataFrame(df, columns=header_list)
     df["date"] = df["date"].apply(lambda x: timestamp_to_iso(x))
 
