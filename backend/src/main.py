@@ -9,7 +9,6 @@ app = FastAPI(
     title="Stock indices forecasting service",
     description="Description",
     version="0.0.1",
-    contact={"name": "Mogilnikov Dmitry", "email": "d.mogqs@gmail.com"},
 )
 
 app.add_middleware(
