@@ -67,17 +67,23 @@ class CalculationIndex:
 
         while idx < self.len_data:
             if self.days_to_reduction[idx] >= self.days_count:
-                decrease_percent = 1 / (self.days_to_reduction[idx] * 100)
                 count = self.days_to_reduction[idx] * 2
+                decrease_percent = 1 / count
+                calc_first = True
 
             if count > 0:
-                self.predict_increase_percentage[idx] = self.increase_percentage[idx - 1] - decrease_percent
-                self.predict_integral_sum[idx] = self.integral_sum[idx - 1] * (1 + self.predict_increase_percentage[idx] / 100)
-                self.predict_cost[idx] = self.predict_integral_sum[idx] - self.integral_sum[idx - 1]
-                self.error[idx] = abs(self.predict_cost[idx] - self.values[idx]) * 100 / self.values[idx]
+                if calc_first:
+                    self.predict_increase_percentage[idx] = self.increase_percentage[idx - 1] - decrease_percent
+                    self.predict_integral_sum[idx] = self.integral_sum[idx - 1] * (1 + self.predict_increase_percentage[idx] / 100)
+                    self.predict_cost[idx] = self.predict_integral_sum[idx] - self.integral_sum[idx - 1]
+                    calc_first = False
+                        
+                else:
+                    self.predict_increase_percentage[idx] = self.predict_increase_percentage[idx - 1] - decrease_percent
+                    self.predict_integral_sum[idx] = self.predict_integral_sum[idx - 1] * (1 + self.predict_increase_percentage[idx] / 100)
+                    self.predict_cost[idx] = self.predict_integral_sum[idx] - self.predict_integral_sum[idx - 1]
 
-            count -= 1
-            idx += 1
+                self.error[idx] = abs(self.predict_cost[idx] - self.values[idx]) * 100 / self.values[idx]
 
 
 def get_all_calculations(
