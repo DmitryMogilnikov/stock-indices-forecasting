@@ -84,6 +84,9 @@ class CalculationIndex:
                     self.predict_cost[idx] = self.predict_integral_sum[idx] - self.predict_integral_sum[idx - 1]
 
                 self.error[idx] = abs(self.predict_cost[idx] - self.values[idx]) * 100 / self.values[idx]
+                count -= 1
+
+            idx += 1
 
 
 def get_all_calculations(
