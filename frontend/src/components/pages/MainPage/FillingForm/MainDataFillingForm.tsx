@@ -1,5 +1,6 @@
 import React from "react";
 import "./../../../../styles/MainDataFillingForm.model.scss";
+import { Link } from "react-router-dom";
 
 
 type Props = {
@@ -59,6 +60,7 @@ function MainDataFillingForm(props: Props) {
                         (document.getElementById("startDate") as HTMLInputElement)!.value!,
                         (document.getElementById("endDate") as HTMLInputElement)!.value!,
                         (document.getElementById("percentage") as HTMLInputElement)!.value!)}}>Скачать</button>
+                        <Link to="/Charts" className="form-button-download">Посмотреть графики</Link>
                     </div>
                 </div>
             </form>

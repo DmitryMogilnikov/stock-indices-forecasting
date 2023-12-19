@@ -14,7 +14,7 @@ async function getExcelData(index_name: string, start_date: string, end_date: st
         const href = URL.createObjectURL(response.data)
         const link = document.createElement('a')
         link.href = href
-        link.setAttribute('download', 'file.xlsx')
+        link.setAttribute('download', `${index_name}.xlsx`)
         document.body.appendChild(link)
         link.click()
         document.body.removeChild(link)
